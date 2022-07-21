@@ -114,14 +114,14 @@ AUTHENTICATION_BACKENDS += ("itsm.openapi.authentication.backend.CustomUserBacke
 IS_PAAS_V3 = int(os.getenv("BKPAAS_MAJOR_VERSION", False)) == 3
 IS_OPEN_V3 = IS_PAAS_V3 and RUN_VER == "open"
 
-# IAM 开启开关
-USE_IAM = True if os.getenv("USE_IAM", "true").lower() == "true" else False
-if USE_IAM:
-    INSTALLED_APPS += (
-        "iam",
-        "iam.contrib.iam_migration",
-        "itsm.auth_iam",
-    )
+# # IAM 开启开关
+# USE_IAM = True if os.getenv("USE_IAM", "true").lower() == "true" else False
+# if USE_IAM:
+#     INSTALLED_APPS += (
+#         "iam",
+#         "iam.contrib.iam_migration",
+#         "itsm.auth_iam",
+#     )
 
 # 这里是默认的中间件，大部分情况下，不需要改动
 # 如果你已经了解每个默认 MIDDLEWARE 的作用，确实需要去掉某些 MIDDLEWARE，或者改动先后顺序，请去掉下面的注释，然后修改

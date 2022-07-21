@@ -5,9 +5,10 @@ const webpackBase = require('./webpack.base.conf')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 // 本地代理地址
-const HOST = ''
+const HOST = 'paas.di-matrix.com'
 const ORIGIN = `http://${HOST}`
 const SET_URL = ''
+const AJAX_URL_PREFIX = 'http://dev.paas.di-matrix.com:8000/'
 
 module.exports = merge(webpackBase, {
     mode: 'development',
@@ -39,17 +40,17 @@ module.exports = merge(webpackBase, {
         overlay: true,
         proxy: {
             '/api/*':{
-                target: ORIGIN + SET_URL,
+                target: AJAX_URL_PREFIX,
                 changeOrigin: true,
                 secure: false
             },
             '/openapi/*':{
-                target: ORIGIN + SET_URL,
+                target: AJAX_URL_PREFIX,
                 changeOrigin: true,
                 secure: false
             },
             '/core/': {
-                target: ORIGIN + SET_URL,
+                target: AJAX_URL_PREFIX,
                 changeOrigin: true,
                 secure: false
             },
