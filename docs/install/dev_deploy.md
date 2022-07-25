@@ -64,6 +64,11 @@ APP_ID = 'bk_itsm'
 APP_TOKEN = '{APP_TOKEN}'
 BK_PAAS_HOST = '{BK_PAAS_HOST}'
 ```
+然后添加环境变量
+```shell
+export BKAPP_REDIS_HOST="{BKAPP_REDIS_HOST}"
+export BKAPP_REDIS_PORT="{BKAPP_REDIS_PORT}"
+```
 
 然后修改 config/default.py ，替换Redis的配置
 ```python
@@ -98,7 +103,7 @@ DATABASES = {
 ```
 
 ## 创建并初始化数据库  
-
+mysql >= 5.7
 1) 在 mysql 中创建名为 bk_sops 的数据库
 ```sql
 CREATE DATABASE `bk_itsm` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -111,6 +116,7 @@ python manage.py createcachetable django_cache
 ```
 
 ## 打包并收集前端静态资源
+推荐 node = v14.19.1
 
 1）安装依赖包  
 进入 frontend/pc/，执行以下命令安装
@@ -131,6 +137,9 @@ mac: 执行 “sudo vim /etc/hosts”，添加“127.0.0.1 dev.{BK_PAAS_HOST}”
 
 ## 启动进程
 ```bash
+# windows
+python manage.py celery worker -l info -P solo
+
 python manage.py celery worker -l info
 python manage.py celery beat -l info
 python manage.py runserver 8000

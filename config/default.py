@@ -220,7 +220,7 @@ if ENABLE_OTEL_TRACE:
 
 # 初始化管理员列表，列表中的人员将拥有预发布环境和正式环境的管理员权限
 # 注意：请在首次提测和上线前修改，之后的修改将不会生效
-BKAPP_ITSM_ADMIN = os.environ.get("BKAPP_ITSM_ADMIN", "")
+BKAPP_ITSM_ADMIN = os.environ.get("BKAPP_ITSM_ADMIN", '')
 INIT_SUPERUSER = set(
     ["admin"] + [username for username in BKAPP_ITSM_ADMIN.split(",") if username]
 )
@@ -343,7 +343,7 @@ CACHES = {
     },
 }
 
-REDIS_HOST = os.environ.get("BKAPP_REDIS_HOST")
+REDIS_HOST = os.environ.get("BKAPP_REDIS_HOST", "localhost")
 IS_USE_REDIS = REDIS_HOST is not None
 
 # redis cache backend
