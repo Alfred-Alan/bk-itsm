@@ -10,11 +10,13 @@ Unless required by applicable law or agreed to in writing, software distributed 
 an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 """
+from urllib import parse
 
 from django.conf import settings
 from django.http import HttpResponseRedirect, JsonResponse
 from django.utils.translation import ugettext_lazy as _
 
+from blueapps.account import conf
 from blueapps.account.utils.http import build_redirect_url
 from blueapps.core.exceptions import BkJwtVerifyError, RioVerifyError
 from blueapps.utils.tools import resolve_login_url
@@ -68,7 +70,7 @@ class ResponseHandler(object):
 
         _login_url = build_redirect_url(
             _next,
-            resolve_login_url(self._conf.LOGIN_PLAIN_URL, request),
+            parse.urljoin(resolve_login_url(request.get_host(), request), self._conf.LOGIN_PLAIN_URL),
             self._conf.C_URL,
             extra_args=self._build_extra_args(),
         )
@@ -96,7 +98,7 @@ class ResponseHandler(object):
             _next = request.GET.get(settings.BLUEAPPS_SPECIFIC_REDIRECT_KEY) or _next
         _redirect = build_redirect_url(
             _next,
-            resolve_login_url(self._conf.LOGIN_PLAIN_URL, request),
+            parse.urljoin(resolve_login_url(request.get_host(), request), self._conf.LOGIN_PLAIN_URL),
             self._conf.C_URL,
             extra_args=self._build_extra_args(),
         )
@@ -115,10 +117,9 @@ class ResponseHandler(object):
             _next = request.GET.get(settings.BLUEAPPS_SPECIFIC_REDIRECT_KEY) or _next
         if self._conf.ADD_CROSS_PREFIX:
             _next = self._conf.CROSS_PREFIX + _next
-
         _login_url = build_redirect_url(
             _next,
-            resolve_login_url(self._conf.LOGIN_URL, request),
+            parse.urljoin(resolve_login_url(request.get_host(), request), self._conf.LOGIN_URL),
             self._conf.C_URL,
             extra_args=self._build_extra_args(),
         )

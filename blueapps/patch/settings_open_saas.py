@@ -122,8 +122,8 @@ if is_open_saas_v2():  # V2
     BK_DEV_URL = "%s/app/list/" % BK_PAAS_HOST
 
     # 蓝鲸登陆页面
-    BK_LOGIN_URL = BK_PAAS_HOST + "/login"
-    BK_LOGIN_INNER_URL = BK_PAAS_INNER_HOST + "/login"
+    BK_LOGIN_URL = "/login"
+    BK_LOGIN_INNER_URL = "/login"
 
     # V2环境 无该环境变量
     BK_COMPONENT_API_URL = None
@@ -140,10 +140,8 @@ else:  # V3
     SECRET_KEY = APP_TOKEN = get_env_or_raise("BKPAAS_APP_SECRET")
 
     # 蓝鲸登陆页面
-    BK_LOGIN_URL = os.getenv("BKPAAS_LOGIN_URL", "%s/login" % BK_PAAS_HOST).rstrip("/")
-    BK_LOGIN_INNER_URL = os.getenv(
-        "BK_LOGIN_INNER_URL", "%s/login" % BK_PAAS_INNER_HOST
-    ).rstrip("/")
+    BK_LOGIN_URL = "/login"
+    BK_LOGIN_INNER_URL = "/login"
 
     # 容器化V3 ESB地址
     BK_COMPONENT_API_URL = os.getenv("BK_COMPONENT_API_URL")

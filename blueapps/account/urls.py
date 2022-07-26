@@ -13,7 +13,7 @@ specific language governing permissions and limitations under the License.
 
 from django.conf.urls import url
 
-from blueapps.account import views
+from blueapps.account import views, views_api
 
 app_name = "account"  # pylint: disable=invalid-name
 
@@ -23,4 +23,7 @@ urlpatterns = [
     url(r"^send_code/$", views.send_code_view, name="send_code"),
     url(r"^get_user_info/$", views.get_user_info, name="get_user_info"),
     url(r"^get_csrf_token/$", views.get_csrf_token, name="get_csrf_token"),
+    # API 接口
+    url(r'^is_login/$', views_api.CheckLoginView.as_view()),
+    url(r'^get_user/$', views_api.UserView.as_view()),
 ]

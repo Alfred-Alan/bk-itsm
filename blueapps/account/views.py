@@ -11,13 +11,59 @@ an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express o
 specific language governing permissions and limitations under the License.
 """
 
+from __future__ import unicode_literals
+
 import time
 
 from django.http import JsonResponse
 from django.middleware import csrf
-from django.shortcuts import render
-
 from blueapps.account.decorators import login_exempt
+from django.conf import settings
+from django.shortcuts import render
+from django.utils.module_loading import import_string
+from blueapps.account.accounts import Account
+
+import json
+
+from django.views.generic import View
+
+from common.mixins.exempt import LoginExemptMixin
+from common.responses import ApiV1FailJsonResponse, ApiV1OKJsonResponse
+
+from blueapps.account.models import User
+from blueapps.account.utils.token import validate_bk_token, is_request_from_esb
+from blueapps.account.constants import ApiErrorCodeEnum
+
+
+class LoginView(LoginExemptMixin, View):
+    """
+    登录
+    """
+
+    def _login(self, request):
+        account = Account()
+        # 判断调用方式
+        if settings.LOGIN_TYPE != 'custom_login':
+            return account.login(request)
+        # 调用自定义login view
+        custom_login_view = import_string(settings.CUSTOM_LOGIN_VIEW)
+        return custom_login_view(request)
+
+    def get(self, request):
+        return self._login(request)
+
+    def post(self, request):
+        return self._login(request)
+
+
+class LogoutView(LoginExemptMixin, View):
+    """
+    登出
+    """
+
+    def get(self, request):
+        account = Account()
+        return account.logout(request)
 
 
 @login_exempt
@@ -45,7 +91,6 @@ def send_code_view(request):
 
 
 def get_user_info(request):
-
     return JsonResponse(
         {
             "code": 0,

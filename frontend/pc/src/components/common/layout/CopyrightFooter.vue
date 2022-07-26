@@ -45,7 +45,7 @@
         text-align: center;
     }
     .link-list {
-        margin-bottom: 6px;
+        margin-bottom: 70px;
     }
     .link-item {
         display: inline-block;

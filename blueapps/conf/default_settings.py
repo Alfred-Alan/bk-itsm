@@ -15,6 +15,9 @@ from __future__ import absolute_import
 
 import os
 import re
+import sys
+
+from django.utils.functional import SimpleLazyObject
 
 from blueapps.conf import environ, get_settings_from_module
 from blueapps.conf.database import get_default_database_config_dict
@@ -134,6 +137,34 @@ LANGUAGES = (
     ("zh-hans", u"简体中文"),
 )
 
+STATIC_VERSION = '0.0.7'
+
+# CSS 文件后缀名
+CSS_SUFFIX = 'min.css'
+# JS 文件后缀名
+JS_SUFFIX = 'min.js'
+
+##################
+# Login Config   #
+##################
+# 蓝鲸登录方式：bk_login，自定义登录方式：custom_login
+LOGIN_TYPE = 'bk_login'
+CUSTOM_LOGIN_VIEW = ''
+CUSTOM_AUTHENTICATION_BACKEND = ''
+try:
+    custom_conf_module_path = "ee_login.settings_login"
+    custom_conf_module = __import__(custom_conf_module_path, globals(), locals(), ['*'])
+    LOGIN_TYPE = getattr(custom_conf_module, 'LOGIN_TYPE', 'bk_login')
+    CUSTOM_LOGIN_VIEW = getattr(custom_conf_module, 'CUSTOM_LOGIN_VIEW', '')
+    CUSTOM_AUTHENTICATION_BACKEND = getattr(custom_conf_module, 'CUSTOM_AUTHENTICATION_BACKEND', '')
+except ImportError as e:
+    LOGIN_TYPE = 'bk_login'
+
+AUTHENTICATION_BACKENDS_DICT = {
+    'bk_login': 'blueapps.account.backends.BkBackend',
+    'custom_login': CUSTOM_AUTHENTICATION_BACKEND,
+}
+
 # Authentication & Authorization
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2
@@ -144,6 +175,8 @@ AUTHENTICATION_BACKENDS = (
     "blueapps.account.backends.RioBackend",
     "blueapps.account.backends.WeixinBackend",
     "blueapps.account.backends.UserBackend",
+    AUTHENTICATION_BACKENDS_DICT.get(LOGIN_TYPE, 'blueapps.account.backends.BkBackend'),
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 RE_MOBILE = re.compile(r"Mobile|Android|iPhone|iPad|iPod", re.IGNORECASE)
@@ -163,3 +196,33 @@ LOGIN_CACHE_EXPIRED = 60
 
 # CELERY与RabbitMQ增加60秒心跳设置项
 BROKER_HEARTBEAT = 60
+
+##################
+# AUTHENTICATION #
+##################
+LOGIN_URL = '/login/'
+
+LOGOUT_URL = '/login/logout/'
+
+# cookie名称
+BK_COOKIE_NAME = 'bk_token'
+BK_COOKIE_DOMAIN = '.di-matrix.com'
+# cookie 有效期，默认为1天
+BK_COOKIE_AGE = 60 * 60 * 24
+# bk_token 校验有效期校验时间允许误差，防止多台机器时间不同步,默认1分钟
+BK_TOKEN_OFFSET_ERROR_TIME = 60
+
+# APP_ENGINE 状态查询超时时间
+EVENT_STATE_EXPIRE_SECONDS = 180
+HISTORY_EVENT_STATE_EXPIRE_SECONDS = 1800
+
+##################
+# 初始化用户信息 #
+##################
+USERNAME = 'admin'
+PASSWORD = 'admin'
+
+TOKEN_SECRET_KEY = 'jO149njrTj4kEx6ZbUH8Zc53bfQJctINWaEzTWIsOoxSDNwK2I'
+
+# ESB Token
+ESB_TOKEN = '41f076b7-afce-46eb-9e85-dab245eb0931'

@@ -50,6 +50,10 @@ def blue_settings(request):
             "REMOTE_STATIC_URL": settings.REMOTE_STATIC_URL,
             # 静态资源版本号,用于指示浏览器更新缓存
             "STATIC_VERSION": settings.STATIC_VERSION,
+            # 本地 js 后缀名
+            'JS_SUFFIX': settings.JS_SUFFIX,
+            # 本地 css 后缀名
+            'CSS_SUFFIX': settings.CSS_SUFFIX,
             # 蓝鲸平台URL
             "BK_URL": settings.BK_URL,
             # 蓝鲸开发者页面

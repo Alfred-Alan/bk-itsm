@@ -10,9 +10,32 @@ Unless required by applicable law or agreed to in writing, software distributed 
 an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 """
-
+from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth import get_user_model
+from blueapps.account.accounts import Account
 from blueapps.account.conf import ConfFixture
 from blueapps.account.utils import load_backend
+
+
+class BkBackend(ModelBackend):
+    """
+    自定义认证方法
+    """
+
+    def authenticate(self, request):
+        print("BkBackend")
+        account = Account()
+        login_status, username, message = account.is_bk_token_valid(request)
+        if not login_status:
+            return None
+
+        user_model = get_user_model()
+        try:
+            user = user_model._default_manager.get_by_natural_key(username)
+        except user_model.DoesNotExist:
+            user = None
+        return user
+
 
 if hasattr(ConfFixture, "USER_BACKEND"):
     UserBackend = load_backend(ConfFixture.USER_BACKEND)

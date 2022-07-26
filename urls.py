@@ -31,12 +31,14 @@ from django.contrib import admin
 from django.views import static
 
 # 公共URL配置
+from blueapps.account import views
+
 urlpatterns = [
     # Django后台数据库管理®
     url(r"^admin/", admin.site.urls),
     # 用户登录鉴权
     # url(r'^account/', include('account.urls')),
-    url(r"^account/", include("blueapps.account.urls")),
+    url(r'^accounts/', include("blueapps.account.urls")),
     # 接口版本管理
     url(r"^api/", include("itsm.api.v1")),
     # 对外开放的接口
@@ -46,6 +48,14 @@ urlpatterns = [
     url(r"^monitor/", include("itsm.monitor.urls")),
     # 各种入口：微信/wiki/首页等
     url(r"^", include("itsm.sites.urls")),
+
+    url(r'^login/', include([
+        # 登录页面
+        url(r'^$', views.LoginView.as_view()),
+        url(r'^plain/$', views.LoginView.as_view()),
+
+        url(r'^logout/$', views.LogoutView.as_view()),
+    ])),
 ]
 
 # handler404 = 'error_pages.views.error_404'

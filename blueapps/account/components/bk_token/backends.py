@@ -13,7 +13,9 @@ specific language governing permissions and limitations under the License.
 
 import logging
 import traceback
+from urllib import parse
 
+from blueapps.account.models import User
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.db import IntegrityError
@@ -21,6 +23,7 @@ from django.db import IntegrityError
 from blueapps.account import get_user_model
 from blueapps.account.conf import ConfFixture
 from blueapps.account.utils.http import send
+from blueapps.account.utils.token import validate_bk_token
 from blueapps.utils import client
 from blueapps.utils.tools import resolve_login_url
 
@@ -35,7 +38,6 @@ class TokenBackend(ModelBackend):
         # 判断是否传入验证所需的bk_token,没传入则返回None
         if not bk_token:
             return None
-
         verify_result, username = self.verify_bk_token(bk_token, request)
         # 判断bk_token是否验证通过,不通过则返回None
         if not verify_result:
@@ -81,7 +83,7 @@ class TokenBackend(ModelBackend):
     @staticmethod
     def get_user_info(bk_token):
         """
-        请求平台ESB接口获取用户信息
+        获取用户信息
         @param bk_token: bk_token
         @type bk_token: str
         @return:True, {
@@ -106,14 +108,19 @@ class TokenBackend(ModelBackend):
         api_params = {"bk_token": bk_token}
 
         try:
-            response = client.bk_login.get_user(api_params)
+            is_valid, user, message = validate_bk_token(api_params)
+            if not is_valid:
+                return False, {}
+            username = user.username
+            # 获取用户数据
+            result, data, message = User.objects.get_user_info(username)
         except Exception as err:  # pylint: disable=broad-except
             logger.exception(u"Abnormal error in get_user_info...:%s" % err)
             return False, {}
 
-        if response.get("result") is True:
+        if result:
             # 由于v1,v2的get_user存在差异,在这里屏蔽字段的差异,返回字段相同的字典
-            origin_user_info = response.get("data", "")
+            origin_user_info = data
             user_info = dict()
             # v1,v2字段相同的部分
             user_info["wx_userid"] = origin_user_info.get("wx_userid", "")
@@ -133,8 +140,8 @@ class TokenBackend(ModelBackend):
                 user_info["role"] = origin_user_info.get("role", "")
             return True, user_info
         else:
-            error_msg = response.get("message", "")
-            error_data = response.get("data", "")
+            error_msg = message
+            error_data = data
             logger.error(
                 u"Failed to Get User Info: error=%(err)s, ret=%(ret)s"
                 % {u"err": error_msg, u"ret": error_data}
@@ -151,10 +158,10 @@ class TokenBackend(ModelBackend):
         @rtype: bool,None/str
         """
         api_params = {"bk_token": bk_token}
-
         try:
             response = send(
-                resolve_login_url(ConfFixture.VERIFY_URL, request, "http"),
+                parse.urljoin(resolve_login_url(request.get_host(), request, "http"),
+                              ConfFixture.VERIFY_URL),
                 "GET",
                 api_params,
                 verify=False,

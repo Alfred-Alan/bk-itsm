@@ -176,7 +176,7 @@ MIDDLEWARE = (
 # mako 模板中：<script src="/a.js?v=${ STATIC_VERSION }"></script>
 # 如果静态资源修改了以后，上线前改这个版本号即可
 # STATIC_VERSION_END
-STATIC_VERSION = "LATEST_STATIC_VERSION"
+# STATIC_VERSION = "LATEST_STATIC_VERSION"
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
@@ -673,7 +673,7 @@ BK_USER_MANAGE_HOST = os.environ.get("BK_USER_MANAGE_HOST", USER_MANGE_HOST)
 
 BK_USER_MANAGE_WEIXIN_HOST = os.environ.get("BK_USER_MANAGE_WEIXIN_HOST", BK_PAAS_HOST)
 
-LOGIN_URL = BK_URL + "/login/"
+# LOGIN_URL = BK_URL + "/login/"
 
 # 是否启用短信评价
 IS_USE_INVITE_SMS = os.environ.get("IS_USE_INVITE_SMS", None)

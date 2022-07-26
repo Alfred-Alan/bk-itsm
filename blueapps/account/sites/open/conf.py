@@ -20,11 +20,11 @@ class ConfFixture(object):
     LOGIN_REQUIRED_MIDDLEWARE = "bk_token.middlewares.LoginRequiredMiddleware"
     USER_MODEL = "bk_token.models.UserProxy"
 
-    LOGIN_URL = settings.BK_LOGIN_URL + "/"
+    LOGIN_URL = str(settings.LOGIN_URL)
     LOGIN_PLAIN_URL = settings.BK_LOGIN_URL + "/plain/"
-    VERIFY_URL = settings.BK_LOGIN_INNER_URL + "/accounts/is_login/"
+    VERIFY_URL = "/accounts/is_login/"
     USER_INFO_URL = settings.BK_LOGIN_INNER_URL + "/accounts/get_user/"
-    HAS_PLAIN = False
+    HAS_PLAIN = True
     ADD_CROSS_PREFIX = False
     ADD_APP_CODE = True
 

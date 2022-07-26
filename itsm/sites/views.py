@@ -40,7 +40,7 @@ from itsm.role.models import BKUserRole, UserRole
 
 def index(request):
     """首页"""
-    from adapter.core import TITLE, DOC_URL, LOGIN_URL
+    from adapter.core import TITLE, LOGIN_URL
 
     # 默认为当前pass host
     BK_USER_MANAGE_HOST = settings.BK_USER_MANAGE_HOST
@@ -85,7 +85,6 @@ def index(request):
             "BK_USER_MANAGE_HOST": BK_USER_MANAGE_HOST,
             "TAM_PROJECT_ID": settings.TAM_PROJECT_ID,
             "DEFAULT_PROJECT": DEFAULT_PROJECT,
-            "DOC_URL": DOC_URL,
             "SOPS_URL": settings.SOPS_SITE_URL,
             "RUN_VER": settings.RUN_VER,
         },
