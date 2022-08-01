@@ -65,6 +65,7 @@ class BkUserManager(BaseUserManager):
         return {
             'username': user.username,
             'chname': user.chname,
+            'display_name': user.chname,  # 兼容前端
             'qq': '',
             'phone': user.phone,
             'email': user.email,
@@ -78,6 +79,7 @@ class BkUserManager(BaseUserManager):
         return {
             'bk_username': user.username,
             'chname': user.chname,
+            'display_name': user.chname,  # 兼容前端
             'qq': '',
             'phone': user.phone,
             'email': user.email,
@@ -85,6 +87,20 @@ class BkUserManager(BaseUserManager):
             'wx_userid': user.wx_userid,
             'language': user.language,
             'time_zone': user.time_zone
+        }
+
+    def _get_user_info_fuzzy(self, user):
+        """
+        适应前端用户查询
+        """
+        return {
+            'category_id': 1,  # 目录id
+            'category_name': '默认目录',  # 目录名称
+            'id': user.id,  # 用户id
+            'username': user.username,  # 用户名
+            'display_name': user.chname,  # 全名
+            'domain': 'default',  # 目录域
+            'logo': '',  # 用户头像
         }
 
     def get_user_info(self, username):
@@ -105,6 +121,16 @@ class BkUserManager(BaseUserManager):
             return False, {}, msg
         return True, self._get_user_info_v2(user), ''
 
+    def get_query_user(self, query_dict: dict):
+        """
+        获取指定用户
+        """
+        for key in list(query_dict.keys()):
+            if not query_dict[key]:
+                del query_dict[key]
+        users = self.filter(**query_dict)
+        return [self._get_user_info_fuzzy(user) for user in users]
+    
     def get_all_user(self, role):
         """
         获取所有用户
@@ -176,33 +202,33 @@ class BkUserManager(BaseUserManager):
             return False, ApiErrorCodeEnum.USER_INFO_UPDATE_FAIL, _("个人信息修改失败")
         return True, ApiErrorCodeEnum.SUCCESS, ''
 
-    def _modify_or_create_user_role(self, user, role_code):
-        """
-        修改或者添加用户角色
-        """
-        from blueapps.account.models import BkUserRole, BkRole
-        # 先删除
-        BkUserRole.objects.filter(user=user).delete()
-        # 后添加
-        bkrole = BkRole.objects.get(code=role_code)
-        BkUserRole.objects.create(user=user, role=bkrole)
-        return True
+    # def _modify_or_create_user_role(self, user, role_code):
+    #     """
+    #     修改或者添加用户角色
+    #     """
+    #     from blueapps.account.models import BkUserRole, BkRole
+    #     # 先删除
+    #     BkUserRole.objects.filter(user=user).delete()
+    #     # 后添加
+    #     bkrole = BkRole.objects.get(code=role_code)
+    #     BkUserRole.objects.create(user=user, role=bkrole)
+    #     return True
 
-    def modify_user_role(self, username, role):
-        """
-        修改用户角色
-        """
-        is_exist, user, msg = self._check_user_exist(username)
-        if not is_exist:
-            return False, msg
-        if role in ROLECODE_LIST:
-            # 最后一个管理员不能修改角色
-            if role != RoleCodeEnum.SUPERUSER and not self.exclude(id=user.id).filter(is_superuser=True).exists():
-                return False, _("该用户是最后一个管理员，不可修改其角色")
-            user.is_superuser = (role == RoleCodeEnum.SUPERUSER)
-            user.save()
-            self._modify_or_create_user_role(user, role)
-        return True, ''
+    # def modify_user_role(self, username, role):
+    #     """
+    #     修改用户角色
+    #     """
+    #     is_exist, user, msg = self._check_user_exist(username)
+    #     if not is_exist:
+    #         return False, msg
+    #     if role in ROLECODE_LIST:
+    #         # 最后一个管理员不能修改角色
+    #         if role != RoleCodeEnum.SUPERUSER and not self.exclude(id=user.id).filter(is_superuser=True).exists():
+    #             return False, _("该用户是最后一个管理员，不可修改其角色")
+    #         user.is_superuser = (role == RoleCodeEnum.SUPERUSER)
+    #         user.save()
+    #         self._modify_or_create_user_role(user, role)
+    #     return True, ''
 
     def get_batch_user_with_paginator(self, page, page_size, search_username, search_data, search_role):
         """
@@ -231,21 +257,21 @@ class BkUserManager(BaseUserManager):
             records = paginator.page(paginator.num_pages)
         return records
 
-    def modify_or_create_user_by_userid(self, user_id, username, chname, phone, email, role):
+    def modify_or_create_user_by_userid(self, user_id, username, chname, phone, email):
         """
         修改或者创建用户
         """
         try:
-            # 最后一个管理员不能去除管理员角色
-            if user_id and role != RoleCodeEnum.SUPERUSER:
-                if not self.exclude(id=user_id).filter(is_superuser=True).exists():
-                    return False, user_id, _("用户是最后一个管理员，不可修改其角色")
+            # # 最后一个管理员不能去除管理员角色
+            # if user_id and role != RoleCodeEnum.SUPERUSER:
+            #     if not self.exclude(id=user_id).filter(is_superuser=True).exists():
+            #         return False, user_id, _("用户是最后一个管理员，不可修改其角色")
             if user_id:
                 user = self.get(id=user_id)
                 user.chname = chname
                 user.phone = phone
                 user.email = email
-                user.is_superuser = (role == RoleCodeEnum.SUPERUSER)
+                # user.is_superuser = (role == RoleCodeEnum.SUPERUSER)
                 user.save()
             else:
                 user = self.create(
@@ -254,15 +280,15 @@ class BkUserManager(BaseUserManager):
                     qq='',
                     phone=phone,
                     email=email,
-                    is_superuser=(role == RoleCodeEnum.SUPERUSER)
+                    # is_superuser=(role == RoleCodeEnum.SUPERUSER)
                 )
                 # 新用户设置默认密码
                 user.set_password(settings.PASSWORD)
                 user.save()
                 user_id = user.id
-            # 添加或者修改用户角色
-            if role in ROLECODE_LIST:
-                self._modify_or_create_user_role(user, role)
+            # # 添加或者修改用户角色
+            # if role in ROLECODE_LIST:
+            #     self._modify_or_create_user_role(user, role)
         except IntegrityError:
             return False, user_id, _("用户已经存在")
         except Exception as error:
@@ -270,27 +296,27 @@ class BkUserManager(BaseUserManager):
             return False, user_id, _("保存用户信息出错")
         return True, user_id, ''
 
-    def modify_or_create_user_by_username(self, username, chname, phone, email, role=None):
-        """
-        通过username,修改或者创建用户
-        """
-        user, _c = self.get_or_create(username=username)
-        user.chname = chname
-        user.qq = ''
-        user.phone = phone
-        user.email = email
-        # 新增用户
-        if _c:
-            # 新用户设置默认密码
-            user.set_password(settings.PASSWORD)
-            # 新用户 role为None则为STAFF
-            role = role if role is not None else RoleCodeEnum.STAFF
-        # 非新增用户只有role非None才进行修改，新用户一定设置
-        if role is not None:
-            user.is_superuser = (role == RoleCodeEnum.SUPERUSER)
-            self._modify_or_create_user_role(user, role)
-        user.save()
-        return True
+    # def modify_or_create_user_by_username(self, username, chname, phone, email, role=None):
+    #     """
+    #     通过username,修改或者创建用户
+    #     """
+    #     user, _c = self.get_or_create(username=username)
+    #     user.chname = chname
+    #     user.qq = ''
+    #     user.phone = phone
+    #     user.email = email
+    #     # 新增用户
+    #     if _c:
+    #         # 新用户设置默认密码
+    #         user.set_password(settings.PASSWORD)
+    #         # 新用户 role为None则为STAFF
+    #         role = role if role is not None else RoleCodeEnum.STAFF
+    #     # 非新增用户只有role非None才进行修改，新用户一定设置
+    #     if role is not None:
+    #         user.is_superuser = (role == RoleCodeEnum.SUPERUSER)
+    #         self._modify_or_create_user_role(user, role)
+    #     user.save()
+    #     return True
 
     def delete_user(self, user_id):
         """

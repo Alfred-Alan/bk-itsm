@@ -218,6 +218,7 @@ class UserRole(ObjectManagerMixin, Model):
                 for item in cls.objects.filter(role_type="CMDB").values("role_key", "id")
             }
             apps = cls.get_app_list_by_user(username, cmdb_roles)
+            # [] 自定义用户没有蓝鲸app权限
 
             for app in apps:
                 # 用户在哪些业务(bizs)下有哪些角色(key)的权限
@@ -227,7 +228,7 @@ class UserRole(ObjectManagerMixin, Model):
                     if username not in value.split(","):
                         continue
                     cmdb_roles[key]["bizs"].add(app["bk_biz_id"])
-
+            # {'bk_biz_developer': {'role_id': 19, 'bizs': set()}, 'bk_biz_maintainer': {'role_id': 20, 'bizs': set()}, 'bk_biz_productor': {'role_id': 21, 'bizs': set()}, 'bk_biz_tester': {'role_id': 22, 'bizs': set()}, 'operator': {'role_id': 23, 'bizs': set()}}
             cache.set(cache_key, cmdb_roles, CACHE_5MIN)
 
             return cmdb_roles
@@ -250,7 +251,6 @@ class UserRole(ObjectManagerMixin, Model):
                     "page": {"start": 0, "limit": 1000, "sort": ""},
                 }
             ).get("info")
-
             return apps
 
         def _batch_get_apps():
@@ -289,7 +289,8 @@ class UserRole(ObjectManagerMixin, Model):
             roles = {
                 item["bk_property_id"]: item["bk_property_name"] for item in res if item["bk_property_group"] == "role"
             }
-
+            # {'bk_biz_developer': '开发人员', 'bk_biz_maintainer': '运维人员', 'bk_biz_productor': 
+            # '产品人员', 'bk_biz_tester': '测试人员', 'operator': '操作人员'} 
             for role in roles:
                 cls.objects.update_or_create(defaults={"name": roles[role]}, **{"role_type": "CMDB", "role_key": role})
 
@@ -362,6 +363,8 @@ class UserRole(ObjectManagerMixin, Model):
             bkuser_roles = BKUserRole.get_or_update_user_roles(username)
             roles["cmdb"] = {str(role["role_id"]): role["bizs"] for role in bkuser_roles["cmdb"].values()}
             roles["organization"] = bkuser_roles["organization"]
+            
+            # print(roles)  # {'general': {'4', '8', '5', '2', '12', '11', '6', '1', '7', '3', '9', '10'}, 'cmdb': {'19': set(), '20': {2}, '21': set(), '22': set(), '23': set()}, 'organization': ['1']}
             cache.set(cache_key, roles, CACHE_30MIN)
         return cache.get(cache_key)
 
@@ -399,6 +402,7 @@ class BKUserRole(models.Model):
         }
         # 更新cmdb角色
         cmdb_roles = UserRole.get_cmdb_role_by_user(username)
+        # {'bk_biz_developer': {'role_id': 19, 'bizs': set()}, 'bk_biz_maintainer': {'role_id': 20, 'bizs': set()}, 'bk_biz_productor': {'role_id': 21, 'bizs': set()}, 'bk_biz_tester': {'role_id': 22, 'bizs': set()}, 'operator': {'role_id': 23, 'bizs': set()}}
         roles.update(cmdb=cmdb_roles)
 
         # 更新组织架构角色

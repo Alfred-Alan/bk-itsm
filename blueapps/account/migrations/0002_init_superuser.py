@@ -12,6 +12,7 @@ specific language governing permissions and limitations under the License.
 """
 
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 from django.db import migrations
 
 
@@ -23,6 +24,7 @@ def load_data(apps, schema_editor):
     for name in settings.INIT_SUPERUSER:
         User.objects.update_or_create(
             username=name,
+            password=make_password(settings.PASSWORD),
             defaults={"is_staff": True, "is_active": True, "is_superuser": True},
         )
 

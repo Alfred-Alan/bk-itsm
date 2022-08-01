@@ -34,6 +34,7 @@ def blue_settings(request):
             avatar_url = request.user.avatar_url
 
         context = {
+            'LOGOUT_URL': settings.LOGOUT_URL,
             # 本地静态文件访问
             "STATIC_URL": settings.STATIC_URL,
             # 当前页面，主要为了login_required做跳转用

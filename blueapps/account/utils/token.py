@@ -4,12 +4,14 @@ from blueapps.conf import settings
 from blueapps.account.models import User
 
 
-def validate_bk_token(data):
+def validate_bk_token(request):
     """
     检查bk_token的合法性，并返回用户实例
     """
     account = Account()
-    bk_token = data.get(account.BK_COOKIE_NAME)
+    bk_token = request.GET.get(account.BK_COOKIE_NAME)
+    if not bk_token:
+        bk_token = request.COOKIES.get('bk_token', '')
     # 验证Token参数
     is_valid, username, message = account._is_bk_token_valid(bk_token)
     if not is_valid:

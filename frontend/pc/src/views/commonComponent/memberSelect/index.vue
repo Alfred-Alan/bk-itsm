@@ -26,12 +26,11 @@
       :value="value"
       class="ui-user-selector"
       :fixed-height="true"
-      :api="api"
       :disabled="disabled"
       :multiple="multiple"
       :placeholder="placeholder"
-      :default-alternate="customUserList"
-      :fuzzy-search-method="specifyIdList.length ? fuzzySearchMethod : null"
+      :fuzzy-search-method="fuzzySearchMethod"
+      :exact-search-method="exactSearchMethod"
       @change="onChange">
     </bk-user-selector>
   </div>
@@ -39,7 +38,6 @@
 
 <script>
   import BkUserSelector from '@blueking/user-selector';
-  import jsonp from 'jsonp';
   import i18n from '@/i18n/index.js';
 
   export default {
@@ -95,45 +93,63 @@
     },
     computed: {
       api() {
-        const host = window.BK_USER_MANAGE_HOST || location.origin;
-        return `${host}/api/c/compapi/v2/usermanage/fs_list_users/`;
+        const host = location.origin;
+        return `${host}/accounts/`;
       },
     },
     created() {
-      if (this.specifyIdList.length) {
-        this.getCustomUserListByspecifyIdList();
-      }
     },
     methods: {
+      // 精确搜索
+      async exactSearchMethod(usernames) {
+        if (!Array.isArray(usernames)) {
+          return;
+        }
+        this.customUserList = [];
+        const res = await this.$store.dispatch('user/getAllUser', { exact_lookups: usernames.join(',') });
+        if (!res.result) {
+          this.$bkMessage({
+            message: '用户拉取失败',
+            theme: 'success',
+          });
+        } else {
+          this.customUserList = res.data;
+        }
+        return this.getUserInfo(usernames);
+      },
       // 查询指定 id 用户信息
-      getUserInfo(userIds) {
-        return new Promise((resolve, reject) => {
-          jsonp(`${this.api}?app_code=bk-magicbox&exact_lookups=${userIds.join(',')}&page_size=100&page=1`, null, (err, res) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(res.data.results);
+      getUserInfo(username) {
+        const isArray = Array.isArray(username);
+        const usernames = isArray ? username : [username];
+        const users = [];
+        usernames.forEach(keyword => {
+          this.customUserList.forEach(item => {
+            const names = item.username + item.display_name;
+            if (names.indexOf(keyword) > -1) {
+              users.push(item);
             }
           });
         });
-      },
-      // 通过指定用户 id 获取自定义备选列表数据
-      getCustomUserListByspecifyIdList() {
-        // 去除人员id中的（）
-        const ids = this.specifyIdList.map(id => id.replace(/\(.*\)$/, ''));
-        this.getUserInfo(ids).then((results) => {
-          this.customUserList = results;
-        });
+        return users;
       },
       // 模糊搜索匹配值，有 dataList 时生效
-      fuzzySearchMethod(keyword) {
-        const results = this.customUserList.filter((item) => {
-          const names = item.username + item.display_name;
-          return names.indexOf(keyword) > -1;
-        });
+      async fuzzySearchMethod(keyword) {
+        if (!keyword) {
+          return;
+        }
+        this.customUserList = [];
+        const res = await this.$store.dispatch('user/getAllUser', { keyword });
+        if (!res.result) {
+          this.$bkMessage({
+            message: '用户拉取失败',
+            theme: 'success',
+          });
+        } else {
+          this.customUserList = res.data;
+        }
         return Promise.resolve({
-          next: true,
-          results,
+          next: false,
+          results: this.getUserInfo(keyword),
         });
       },
       onChange(value) {

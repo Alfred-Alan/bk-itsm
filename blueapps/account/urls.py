@@ -12,8 +12,9 @@ specific language governing permissions and limitations under the License.
 """
 
 from django.conf.urls import url
+from django.urls import include
 
-from blueapps.account import views, views_api
+from blueapps.account import views, views_api, views_api_v2
 
 app_name = "account"  # pylint: disable=invalid-name
 
@@ -26,4 +27,29 @@ urlpatterns = [
     # API 接口
     url(r'^is_login/$', views_api.CheckLoginView.as_view()),
     url(r'^get_user/$', views_api.UserView.as_view()),
+    url(r'^get_all_user/$', views_api.AllUsersView.as_view()),
+    url(r'^get_batch_user/$', views_api.BatchUsersView.as_view()),
+
+    # 用户信息相关
+    url(r'^user/', include([
+        # 用户管理
+        url(r'^list/', include([
+            url(r'^$', views.UserPageView.as_view()),
+            url(r'^query/$', views.UserListPage.as_view()),
+        ])),
+        # [post] user create
+        url(r'^$', views.UserView.as_view()),
+        # [put/delete] userinfo modify / user delete
+        url(r'^(?P<user_id>\d+)/$', views.UserView.as_view()),
+        # [put] user password
+        url(r'^(?P<user_id>\d+)/password/$', views.UserPasswordView.as_view()),
+
+        # API for user center in paas with bktoken cookies
+        # [put] user password reset
+        url(r'^password/$', views_api.CurrentUserPasswordView.as_view()),
+        # [post] user info modify
+        url(r'^baseinfo/$', views_api.CurrentUserBaseInfoView.as_view()),
+        # [post/delete] weixin user_id bind/unbind
+        url(r'^weixin_info/$', views_api.CurrentUserWeixinInfoView.as_view()),
+    ])),
 ]

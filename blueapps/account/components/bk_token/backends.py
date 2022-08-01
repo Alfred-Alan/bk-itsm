@@ -29,7 +29,7 @@ from blueapps.utils.tools import resolve_login_url
 
 logger = logging.getLogger("component")
 
-ROLE_TYPE_ADMIN = "1"
+ROLE_TYPE_ADMIN = "SUPERUSER"
 
 
 class TokenBackend(ModelBackend):
@@ -46,7 +46,7 @@ class TokenBackend(ModelBackend):
         user_model = get_user_model()
         try:
             user, _ = user_model.objects.get_or_create(username=username)
-            get_user_info_result, user_info = self.get_user_info(bk_token)
+            get_user_info_result, user_info = self.get_user_info(request, bk_token)
             # 判断是否获取到用户信息,获取不到则返回None
             if not get_user_info_result:
                 return None
@@ -62,7 +62,7 @@ class TokenBackend(ModelBackend):
             # 用户如果不是管理员，则需要判断是否存在平台权限，如果有则需要加上
             if not user.is_superuser and not user.is_staff:
                 role = user_info.get("role", "")
-                is_admin = True if str(role) == ROLE_TYPE_ADMIN else False
+                is_admin = True if ROLE_TYPE_ADMIN in str(role) else False
                 user.is_superuser = is_admin
                 user.is_staff = is_admin
                 user.save()
@@ -81,9 +81,10 @@ class TokenBackend(ModelBackend):
             return None
 
     @staticmethod
-    def get_user_info(bk_token):
+    def get_user_info(request, bk_token):
         """
-        获取用户信息
+        请求平台ESB接口获取用户信息
+        @param request: request
         @param bk_token: bk_token
         @type bk_token: str
         @return:True, {
@@ -108,19 +109,19 @@ class TokenBackend(ModelBackend):
         api_params = {"bk_token": bk_token}
 
         try:
-            is_valid, user, message = validate_bk_token(api_params)
-            if not is_valid:
-                return False, {}
-            username = user.username
-            # 获取用户数据
-            result, data, message = User.objects.get_user_info(username)
+            response = send(
+                parse.urljoin(resolve_login_url(request.get_host(), request, "http"),
+                              ConfFixture.USER_INFO_URL),
+                "GET",
+                api_params,
+                verify=False,
+            )
         except Exception as err:  # pylint: disable=broad-except
             logger.exception(u"Abnormal error in get_user_info...:%s" % err)
             return False, {}
-
-        if result:
+        if response.get("result") is True:
             # 由于v1,v2的get_user存在差异,在这里屏蔽字段的差异,返回字段相同的字典
-            origin_user_info = data
+            origin_user_info = response.get("data", "")
             user_info = dict()
             # v1,v2字段相同的部分
             user_info["wx_userid"] = origin_user_info.get("wx_userid", "")
@@ -140,8 +141,8 @@ class TokenBackend(ModelBackend):
                 user_info["role"] = origin_user_info.get("role", "")
             return True, user_info
         else:
-            error_msg = message
-            error_data = data
+            error_msg = response.get("message", "")
+            error_data = response.get("data", "")
             logger.error(
                 u"Failed to Get User Info: error=%(err)s, ret=%(ret)s"
                 % {u"err": error_msg, u"ret": error_data}
@@ -169,7 +170,6 @@ class TokenBackend(ModelBackend):
         except Exception:  # pylint: disable=broad-except
             logger.exception(u"Abnormal error in verify_bk_token...")
             return False, None
-
         if response.get("result"):
             data = response.get("data")
             username = data.get("username")

@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'bk-icons-linear';
-  src:  url('./fonts/bk_icons_linear.eot?3xrc6s');
-  src:  url('./fonts/bk_icons_linear.eot?3xrc6s#iefix') format('embedded-opentype'),
-    url('./fonts/bk_icons_linear.ttf?3xrc6s') format('truetype'),
-    url('./fonts/bk_icons_linear.woff?3xrc6s') format('woff'),
-    url('./fonts/bk_icons_linear.svg?3xrc6s#bk_icons_linear') format('svg');
+  src:  url('fonts/bk_icons_linear.eot?3xrc6s');
+  src:  url('fonts/bk_icons_linear.eot?3xrc6s#iefix') format('embedded-opentype'),
+    url('fonts/bk_icons_linear.ttf?3xrc6s') format('truetype'),
+    url('fonts/bk_icons_linear.woff?3xrc6s') format('woff'),
+    url('fonts/bk_icons_linear.svg?3xrc6s#bk_icons_linear') format('svg');
   font-weight: normal;
   font-style: normal;
 }

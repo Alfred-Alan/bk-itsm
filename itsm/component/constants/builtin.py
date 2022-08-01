@@ -372,6 +372,7 @@ DEFAULT_USERS = ",admin,"
 USER_ROLE_CHOICES = [
     # role_key name 3role_type access 5members desc
     # GENERAL
+    ("GENERAL_USER", "普通用户", "GENERAL", "", DEFAULT_USERS, "普通用户"),
     ("DEV", "开发", "GENERAL", "", DEFAULT_USERS, "DEV"),
     ("PM", "开发经理", "GENERAL", "", DEFAULT_USERS, "PM"),
     ("OPT", "运营", "GENERAL", "", DEFAULT_USERS, "OPT"),
@@ -415,10 +416,10 @@ USER_ROLE_CHOICES = [
         "可管理知识库所有文章",
     ),
     # IAM
-    ("super_manager", "超级管理员", "IAM", "", "", "权限中心管理权限最高的角色"),
-    ("system_manager", "系统管理员", "IAM", "", "", "每个接入系统在权限中心管理权限最高的角色"),
-    ("rating_manager", "分级管理员", "IAM", "", "", "根据不同权限范围拥有其所在范围内的管理权限的角色"),
-    ("instance_approver", "实例审批人", "IAM", "", "", "根据不同权限范围拥有其所在实例范围内的管理权限的角色"),
+    ("super_manager", "超级管理员", "IAM", "", DEFAULT_USERS, "权限中心管理权限最高的角色"),
+    ("system_manager", "系统管理员", "IAM", "", DEFAULT_USERS, "每个接入系统在权限中心管理权限最高的角色"),
+    ("rating_manager", "分级管理员", "IAM", "", DEFAULT_USERS, "根据不同权限范围拥有其所在范围内的管理权限的角色"),
+    ("instance_approver", "实例审批人", "IAM", "", DEFAULT_USERS, "根据不同权限范围拥有其所在实例范围内的管理权限的角色"),
 ]
 
 ROLE_CHOICES = [

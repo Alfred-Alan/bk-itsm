@@ -332,7 +332,7 @@ class Account(AccountSingleton):
         response = HttpResponseRedirect(redirect_to)
         response.set_cookie(self.BK_COOKIE_NAME, bk_token,
                             expires=expire_time,
-                            domain=settings.BK_COOKIE_DOMAIN,  # 针对域名设置cookie
+                            # domain=settings.BK_COOKIE_DOMAIN,  # 针对域名设置cookie
                             httponly=True)
         # NOTE: DO NOT SET THE LANGUAGE COOKIE HERE BEFORE I18N is AVAILABLE
         # set cookie for app or platform

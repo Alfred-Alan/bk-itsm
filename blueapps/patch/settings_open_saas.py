@@ -70,8 +70,8 @@ if is_open_saas_v2():  # V2
     BK_PAAS_INNER_HOST = os.getenv("BK_PAAS_INNER_HOST", BK_PAAS_HOST).rstrip("/")
 
     # 兼容component的APP_ID,APP_TOKEN
-    APP_CODE = APP_ID = get_env_or_raise("APP_ID")
-    SECRET_KEY = APP_TOKEN = get_env_or_raise("APP_TOKEN")
+    APP_CODE = APP_ID = locals()['APP_ID']
+    SECRET_KEY = APP_TOKEN = locals()['APP_TOKEN']
 
     # IS_LOCAL,V2和V3的判断方式不同,V2用BK_ENV
     IS_LOCAL = not os.getenv("BK_ENV", False)

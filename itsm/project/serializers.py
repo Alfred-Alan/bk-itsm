@@ -89,6 +89,7 @@ class ProjectSerializer(ModelSerializer):
             "resource_type_name": "项目",
         }
         apply_actions = self.Meta.model.resource_operations
+        # 用户action鉴权
         auth_actions = iam_client.batch_resource_multi_actions_allowed(
             apply_actions, [project_info], project_key=instance.key
         ).get(instance.key, {})

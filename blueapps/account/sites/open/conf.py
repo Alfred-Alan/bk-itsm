@@ -23,8 +23,8 @@ class ConfFixture(object):
     LOGIN_URL = str(settings.LOGIN_URL)
     LOGIN_PLAIN_URL = settings.BK_LOGIN_URL + "/plain/"
     VERIFY_URL = "/accounts/is_login/"
-    USER_INFO_URL = settings.BK_LOGIN_INNER_URL + "/accounts/get_user/"
-    HAS_PLAIN = True
+    USER_INFO_URL = "/accounts/get_user/"
+    HAS_PLAIN = False
     ADD_CROSS_PREFIX = False
     ADD_APP_CODE = True
 

@@ -32,6 +32,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_GET
 from mako.template import Template
 
+from itsm.component.utils.client_backend_query import get_bk_users
 from itsm.project.models import UserProjectAccessRecord
 from common.log import logger
 from config.default import FRONTEND_URL
@@ -52,10 +53,10 @@ def index(request):
         BK_USER_MANAGE_HOST = FRONTEND_URL
 
     logger.info("HTTP_REFERER={}".format(request.META.get("HTTP_REFERER", "")))
-    # 更新cmdb通用角色
-    UserRole.update_cmdb_common_roles()
-    # 更新用户在各个系统的角色缓存
-    BKUserRole.get_or_update_user_roles(request.user.username)
+    # # 更新cmdb通用角色
+    # UserRole.update_cmdb_common_roles()
+    # # 更新用户在各个系统的角色缓存
+    # BKUserRole.get_or_update_user_roles(request.user.username)
     try:
         DEFAULT_PROJECT = UserProjectAccessRecord.objects.get(
             username=request.user.username

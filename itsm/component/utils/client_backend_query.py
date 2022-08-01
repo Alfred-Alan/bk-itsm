@@ -335,7 +335,6 @@ def get_user_departments(username, id_only):
     """获取用户所属部门信息"""
     cache_key = "%suser_departments_%s_%s" % (PREFIX_KEY, username, id_only)
     departments = cache.get(cache_key)
-
     if not departments:
         departments = update_user_departments(cache_key, username, id_only)
     else:

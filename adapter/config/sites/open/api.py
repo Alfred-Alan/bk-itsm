@@ -30,19 +30,16 @@ def get_batch_users(users, properties='all', is_exact=True, page_params=None):
     """
     批量获取用户信息
     """
-
+    from blueapps.account.models import User
     if page_params is None:
         page_params = {}
-
-    from itsm.component.esb.esbclient import client_backend
     if not users:
         # 不带用户的情况下，直接返回空列表
         return []
 
-    params = {"bk_username_list": users}
-    default_properties = 'username,display_name,telephone,email,qq,wx_userid,departments'
-
-    data = client_backend.bk_login.get_batch_users(**params)
+    params = {"username_list": users}
+    default_properties = 'username,display_name,phone,email,qq,wx_userid,departments'
+    data = User.objects.get_batch_users_with_dict_v2(**params)
 
     if properties == 'all':
         # 展示所有属性
@@ -62,16 +59,14 @@ def get_batch_users(users, properties='all', is_exact=True, page_params=None):
 
 def get_all_users(users=None):
     """获取所有用户列表"""
-    from itsm.component.esb.esbclient import client_backend
-
+    from blueapps.account.models import User
     if users is None:
         users = []
 
     if users:
         res = get_batch_users(users)
     else:
-        res = client_backend.bk_login.get_all_users()
-
+        res = User.objects.get_all_users_v2()
     return [
         {
             "id": user["bk_username"],
@@ -84,7 +79,7 @@ def get_all_users(users=None):
 
 
 # 企业/社区版启用用户管理
-if os.environ.get("BKAPP_ENABLE_USERMGR") != '0':
+if os.environ.get("BKAPP_ENABLE_USERMGR", '0') != '0':
     # 默认需要用用户管理
     from adapter.config.sites.ieod.api import get_batch_users  # noqa
     from adapter.config.sites.ieod.api import get_all_users  # noqa

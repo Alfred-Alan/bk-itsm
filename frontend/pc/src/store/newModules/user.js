@@ -51,5 +51,11 @@ export default {
         return res;
       });
     },
+    getAllUser({ commit, state, dispatch }, { keyword='', exact_lookups='' }) {
+      return ajax.get(`accounts/get_all_user/?name__icontains=${keyword}&exact_lookups=${exact_lookups}`).then((response) => {
+        const res = response.data;
+        return res;
+      });
+    },
   },
 };

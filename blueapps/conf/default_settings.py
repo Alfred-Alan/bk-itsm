@@ -202,7 +202,9 @@ BROKER_HEARTBEAT = 60
 ##################
 LOGIN_URL = '/login/'
 
-LOGOUT_URL = '/login/logout/'
+LOGOUT_URL = SimpleLazyObject(lambda: '%slogout/'
+                                      % getattr(getattr(sys.modules['django.conf'], 'settings'),
+                                                'LOGIN_URL'))
 
 # cookie名称
 BK_COOKIE_NAME = 'bk_token'

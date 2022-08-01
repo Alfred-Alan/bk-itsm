@@ -51,7 +51,7 @@ ROLECODE_LIST = [
 ]
 
 ApiErrorCodeEnum = enum(
-    SUCCESS="00",
+    SUCCESS=0,
     PARAM_NOT_VALID="1200",
     USER_NOT_EXISTS="1201",
     # 做兼容

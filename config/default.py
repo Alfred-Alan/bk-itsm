@@ -34,6 +34,7 @@ from django.urls import reverse
 
 from config import (
     APP_CODE,
+    APP_TOKEN,
     BASE_DIR,
     BK_URL,
     PROJECT_ROOT,

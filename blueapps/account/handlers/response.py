@@ -37,7 +37,6 @@ class ResponseHandler(object):
         self._settings = _settings
 
     def build_401_response(self, request):
-
         # 强制要求进行跳转的方式
         if getattr(settings, "IS_AJAX_PLAIN_MODE", False) and request.is_ajax():
             return self._build_ajax_401_response(request)
@@ -50,7 +49,7 @@ class ResponseHandler(object):
                 return self._build_page_401_response(request)
         else:
             if request.is_ajax():
-                context = {"has_plain": False}
+                context = {"has_plain": True}
                 return JsonResponse(context, status=401)
             else:
                 return self._build_page_401_response_platform(request)

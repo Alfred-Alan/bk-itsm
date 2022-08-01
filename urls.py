@@ -29,6 +29,7 @@ from django.conf.urls import include, url
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 from django.views import static
+from django.views.i18n import JavaScriptCatalog
 
 # 公共URL配置
 from blueapps.account import views
@@ -37,10 +38,13 @@ urlpatterns = [
     # Django后台数据库管理®
     url(r"^admin/", admin.site.urls),
     # 用户登录鉴权
-    # url(r'^account/', include('account.urls')),
     url(r'^accounts/', include("blueapps.account.urls")),
     # 接口版本管理
-    url(r"^api/", include("itsm.api.v1")),
+    url(r"^api/", include([
+        url(r'^', include("itsm.api.v1")),
+        # 兼容前端请求用户接口
+        url(r'^accounts/', include("blueapps.account.urls")),
+    ])),
     # 对外开放的接口
     url(r"^openapi/", include("itsm.api.open_v1")),
     url(r"^openapi/v2/", include("itsm.api.open_v2")),

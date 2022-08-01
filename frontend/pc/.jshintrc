@@ -26,5 +26,6 @@
     "asi": true,
     "predef": [
         "System"
-    ]
+    ],
+    "esversion": 8
 }

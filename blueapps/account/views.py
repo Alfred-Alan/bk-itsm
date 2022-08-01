@@ -110,3 +110,142 @@ def get_csrf_token(request):
     """
     csrf_token = csrf.get_token(request)
     return JsonResponse({"csrf_token": csrf_token})
+
+
+from django.conf import settings
+from django.db import transaction
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse, QueryDict
+from django.shortcuts import render
+from django.utils.module_loading import import_string
+from django.utils.translation import ugettext as _
+from django.views.generic import View, TemplateView
+
+from common.log import logger
+from common.mixins.base import SuperuserRequiredMixin, SuperuserOrPutOwnerRequiredMixin
+from common.mixins.exempt import LoginExemptMixin
+from common.responses import FailJsonResponse, OKJsonResponse
+from blueapps.account.utils.basic import first_error_message
+from blueapps.account.accounts import Account
+from blueapps.account.forms import UserInfoForm, SetPasswordForm, UserQueryForm, ImportUserForm
+from blueapps.account.models import User
+from blueapps.account.utils.user import (get_page_info)
+
+
+class UserPageView(TemplateView):
+    """
+    用户管理页面
+    """
+    template_name = "bkaccount/users.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserPageView, self).get_context_data(**kwargs)
+        request = self.request
+
+        context.update({
+            'default_paasword': settings.PASSWORD,
+            'error_msg': request.GET.get('error_msg') or '',
+            'success_msg': request.GET.get('success_msg') or ''
+        })
+        return context
+
+
+class UserListPage(TemplateView):
+    """
+    用户信息列表页面
+    """
+    template_name = "bkaccount/user_table.part"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserListPage, self).get_context_data(**kwargs)
+        request = self.request
+
+        form = UserQueryForm(request.GET)
+        form.is_valid()
+
+        page = form.cleaned_data["page"]
+        page_size = form.cleaned_data["page_size"]
+        page, page_size = get_page_info(page, page_size)
+
+        # 管理员查看所有用户，无需过滤
+        search_username = '' if request.user.is_superuser else request.user.username
+        # 根据查询条件过滤
+        search_data = form.cleaned_data["search_data"]
+        search_role = form.cleaned_data["search_role"]
+
+        # 获取分页数据
+        records = User.objects.get_batch_user_with_paginator(page, page_size, search_username,
+                                                             search_data, search_role)
+
+        # 前端分页临近页数，默认设置为 3
+        adjacent_pages = 3
+        start_page = max(records.number - adjacent_pages, 1)
+        start_page = 1 if start_page < adjacent_pages else start_page
+        end_page = records.number + adjacent_pages + 1
+        if end_page > records.paginator.num_pages - adjacent_pages + 2:
+            end_page = records.paginator.num_pages + 1
+        page_numbers = [n for n in range(start_page, end_page)]
+        show_first = 1 not in page_numbers
+        show_last = records.paginator.num_pages not in page_numbers
+        context.update({
+            'records': records,
+            'page_numbers': page_numbers,
+            'show_first': show_first,
+            'show_last': show_last,
+        })
+        return context
+
+
+class UserView(SuperuserOrPutOwnerRequiredMixin, View):
+    """
+    CUD User
+    """
+
+    def _add_or_update(self, request, user_id=None):
+        request_param = request.POST if user_id is None else QueryDict(request.body)
+        form = UserInfoForm(request_param)
+
+        if not form.is_valid():
+            message = first_error_message(form)
+            return FailJsonResponse(message)
+
+        # 创建用户
+        result, user_id, message = User.objects.modify_or_create_user_by_userid(
+            user_id,
+            form.cleaned_data["username"],
+            form.cleaned_data["chname"],
+            form.cleaned_data["phone"],
+            form.cleaned_data["email"],
+        )
+        print(result)
+        if not result:
+            return FailJsonResponse(message)
+        return OKJsonResponse(_("保存用户信息成功"), data={"user_id": user_id})
+
+    def post(self, request):
+        return self._add_or_update(request, None)
+
+    def put(self, request, user_id):
+        return self._add_or_update(request, user_id)
+
+    def delete(self, request, user_id):
+        result, message = User.objects.delete_user(user_id)
+        if not result:
+            return FailJsonResponse(message)
+        return OKJsonResponse(_("用户删除成功"))
+
+
+class UserPasswordView(SuperuserOrPutOwnerRequiredMixin, View):
+    def put(self, request, user_id):
+        request_param = QueryDict(request.body)
+        form = SetPasswordForm(request_param)
+
+        if not form.is_valid():
+            message = first_error_message(form)
+            return FailJsonResponse(message)
+
+        # 修改密码
+        result, message = User.objects.modify_password_by_userid(user_id,
+                                                                 form.cleaned_data['new_password1'])
+        if not result:
+            return FailJsonResponse(message)
+        return OKJsonResponse(_("修改密码成功"))

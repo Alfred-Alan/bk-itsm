@@ -31,6 +31,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from blueapps.account import conf
 from blueapps.account.utils import sms
+from itsm.component.utils.basic import dotted_name
+from itsm.role.models import UserRole
 
 ConfFixture = conf.ConfFixture
 
@@ -230,19 +232,19 @@ from blueapps.account.constants import (ROLECODE_CHOICES, RoleCodeEnum, LANGUAGE
                                         TIME_ZONE_CHOICES)
 
 
-class BkRole(models.Model):
-    """
-    角色表
-    """
-    code = models.IntegerField("角色编号", choices=ROLECODE_CHOICES, unique=True)
-
-    def __unicode__(self):
-        return '%s' % (self.code)
-
-    class Meta:
-        db_table = "login_bkrole"
-        verbose_name = "用户角色"
-        verbose_name_plural = "用户角色"
+# class BkRole(models.Model):
+#     """
+#     角色表
+#     """
+#     code = models.IntegerField("角色编号", choices=ROLECODE_CHOICES, unique=True)
+# 
+#     def __unicode__(self):
+#         return '%s' % (self.code)
+# 
+#     class Meta:
+#         db_table = "login_bkrole"
+#         verbose_name = "用户角色"
+#         verbose_name_plural = "用户角色"
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -257,7 +259,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     qq = models.CharField("QQ号", max_length=32, blank=True)
     phone = models.CharField("手机号", max_length=64, blank=True)
     email = models.EmailField("邮箱", max_length=254, blank=True)
-    role = models.ManyToManyField(BkRole, verbose_name="角色", through='BkUserRole')
+    # role = models.ManyToManyField(UserRole, verbose_name="角色", through='BkUserRole')
 
     nickname = models.CharField(
         _("nick name"),
@@ -278,6 +280,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             "active. Unselect this instead of deleting accounts."
         ),
     )
+    is_wiki_superuser = models.BooleanField(
+        _("is_wiki_superuser"),
+        default=False,
+    )
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     objects = BkUserManager()
 
@@ -292,23 +298,32 @@ class User(AbstractBaseUser, PermissionsMixin):
     # def is_staff(self):
     #     return self.is_superuser
 
+    # @property
+    # def role_code(self):
+    #     role_list = self.role.all().values_list('code', flat=True)
+    #     # 多个角色，则已最高角色为主（superuser > developer > staff）
+    #     if RoleCodeEnum.SUPERUSER in role_list:
+    #         return RoleCodeEnum.SUPERUSER
+    #     if RoleCodeEnum.DEVELOPER in role_list:
+    #         return RoleCodeEnum.DEVELOPER
+    #     if RoleCodeEnum.OPERATOR in role_list:
+    #         return RoleCodeEnum.OPERATOR
+    #     if RoleCodeEnum.AUDITOR in role_list:
+    #         return RoleCodeEnum.AUDITOR
+    #     return RoleCodeEnum.STAFF
+
     @property
     def role_code(self):
-        role_list = self.role.all().values_list('code', flat=True)
-        # 多个角色，则已最高角色为主（superuser > developer > staff）
-        if RoleCodeEnum.SUPERUSER in role_list:
-            return RoleCodeEnum.SUPERUSER
-        if RoleCodeEnum.DEVELOPER in role_list:
-            return RoleCodeEnum.DEVELOPER
-        if RoleCodeEnum.OPERATOR in role_list:
-            return RoleCodeEnum.OPERATOR
-        if RoleCodeEnum.AUDITOR in role_list:
-            return RoleCodeEnum.AUDITOR
-        return RoleCodeEnum.STAFF
+        # role_list = self.role.all().values_list('role_key', flat=True)
+        role_list = UserRole.objects.filter(members__contains=dotted_name(self.username)).values_list(
+            "role_key", flat=True
+        )
+        return list(role_list)
 
     @property
     def is_superuser_role(self):
-        return self.role.filter(code=RoleCodeEnum.SUPERUSER).exists()
+        # return self.role.filter(code=RoleCodeEnum.SUPERUSER).exists()
+        return UserRole.is_itsm_superuser(self.username)
 
     @property
     def wx_userid(self):
@@ -358,21 +373,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.set_property("avatar_url", a_url)
 
 
-class BkUserRole(models.Model):
-    """
-    用户角色多对多表
-    """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    role = models.ForeignKey(BkRole, on_delete=models.CASCADE)
-    create_time = models.DateTimeField(_('create_time'), default=timezone.now)
-
-    def __unicode__(self):
-        return '%s(%s)' % (self.user.username, self.role.code)
-
-    class Meta:
-        db_table = "login_bkuser_role"
-        verbose_name = "用户角色关系表"
-        verbose_name_plural = "用户角色关系表"
+# class BkUserRole(models.Model):
+#     """
+#     用户角色多对多表
+#     """
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     role = models.ForeignKey(BkRole, on_delete=models.CASCADE)
+#     create_time = models.DateTimeField(_('create_time'), default=timezone.now)
+# 
+#     def __unicode__(self):
+#         return '%s(%s)' % (self.user.username, self.role.code)
+# 
+#     class Meta:
+#         db_table = "login_bkuser_role"
+#         verbose_name = "用户角色关系表"
+#         verbose_name_plural = "用户角色关系表"
 
 
 class Loignlog(models.Model):
