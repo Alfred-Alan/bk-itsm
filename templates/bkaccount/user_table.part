@@ -20,6 +20,7 @@
             <th width="15%">{% trans '中文名' %}</th>
             <th width="15%">{% trans '联系电话' %}</th>
             <th width="16%">{% trans '常用邮箱' %}</th>
+            <th width="10%">{% trans '角色' %}</th>
             <th width="14%">{% trans '操作' %}</th>
         </tr>
     </thead>
@@ -38,6 +39,18 @@
 	        </td>
 	        <td>
 	        	<input class="form-control u_email" disabled value="{{ obj.email }}" placeholder="--"/>
+	        </td>
+	        <td>
+	        {% if request.user.is_superuser %}
+	        	<select class="form-control u_role" disabled style="width:90px">
+	        		<option value="0" {% if obj.role_code == 0 %} selected {% endif %}>{% trans '普通用户' %}</option>
+                    <option value="1" {% if obj.role_code == 1 %} selected {% endif %}>{% trans '管理员' %}</option>
+                </select>
+		    {% else %}
+		    	<select class="form-control u_role" disabled style="width:90px">
+                    {% if obj.role_code == 0 %}<option value="0" selected>{% trans '普通用户' %}</option>{% endif %}
+                </select>
+		    {% endif %}
 	        </td>
 	        <td>
                 <button type="button" class="btn-xs user_cancel_btn">{% trans '取消' %}</button>

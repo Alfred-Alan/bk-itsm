@@ -19,20 +19,20 @@ from django.http import JsonResponse
 from django.middleware import csrf
 from blueapps.account.decorators import login_exempt
 from django.conf import settings
+from django.http import QueryDict
 from django.shortcuts import render
 from django.utils.module_loading import import_string
-from blueapps.account.accounts import Account
+from django.utils.translation import ugettext as _
+from django.views.generic import View, TemplateView
 
-import json
-
-from django.views.generic import View
-
+from common.mixins.base import SuperuserOrPutOwnerRequiredMixin
 from common.mixins.exempt import LoginExemptMixin
-from common.responses import ApiV1FailJsonResponse, ApiV1OKJsonResponse
-
+from common.responses import FailJsonResponse, OKJsonResponse
+from blueapps.account.utils.basic import first_error_message
+from blueapps.account.accounts import Account
+from blueapps.account.forms import UserInfoForm, SetPasswordForm, UserQueryForm
 from blueapps.account.models import User
-from blueapps.account.utils.token import validate_bk_token, is_request_from_esb
-from blueapps.account.constants import ApiErrorCodeEnum
+from blueapps.account.utils.user import (get_page_info)
 
 
 class LoginView(LoginExemptMixin, View):
@@ -110,25 +110,6 @@ def get_csrf_token(request):
     """
     csrf_token = csrf.get_token(request)
     return JsonResponse({"csrf_token": csrf_token})
-
-
-from django.conf import settings
-from django.db import transaction
-from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse, QueryDict
-from django.shortcuts import render
-from django.utils.module_loading import import_string
-from django.utils.translation import ugettext as _
-from django.views.generic import View, TemplateView
-
-from common.log import logger
-from common.mixins.base import SuperuserRequiredMixin, SuperuserOrPutOwnerRequiredMixin
-from common.mixins.exempt import LoginExemptMixin
-from common.responses import FailJsonResponse, OKJsonResponse
-from blueapps.account.utils.basic import first_error_message
-from blueapps.account.accounts import Account
-from blueapps.account.forms import UserInfoForm, SetPasswordForm, UserQueryForm, ImportUserForm
-from blueapps.account.models import User
-from blueapps.account.utils.user import (get_page_info)
 
 
 class UserPageView(TemplateView):
@@ -215,6 +196,7 @@ class UserView(SuperuserOrPutOwnerRequiredMixin, View):
             form.cleaned_data["chname"],
             form.cleaned_data["phone"],
             form.cleaned_data["email"],
+            form.cleaned_data["role"]
         )
         print(result)
         if not result:
