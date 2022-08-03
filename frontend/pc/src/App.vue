@@ -118,6 +118,11 @@
       },
     },
     async created() {
+      this.loading = true;
+      await this.getPermissionMeta();
+      // await this.loadProjectInfo()
+      await this.getManagePermission();
+      await this.initGetInfo();
       bus.$on('showPermissionModal', (data) => {
         this.$refs.permissionModal && this.$refs.permissionModal.show(data);
       });
@@ -131,11 +136,6 @@
           this.isRouterAlive = true;
         }
       });
-      this.loading = true;
-      await this.getPermissionMeta();
-      // await this.loadProjectInfo()
-      await this.getManagePermission();
-      await this.initGetInfo();
     },
     async mounted() {
       const vm = this;

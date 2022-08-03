@@ -1,0 +1,353 @@
+{
+  "visible": "1",
+  "executeJar": "jars/Di-Logger-api.jar",
+  "port": "7082",
+  "name": "Di-Itsm",
+  "icon": "/Di-Logger/icon.svg",
+  "link": "/Di-Itsm",
+  "description": "解构等保合规标准规范，构建集识别、防护、检测、响应于一体的全面的安全体系。实现企业合规监测透明化，安全防护自动化。 ",
+  "logo": "/Di-Logger/logo.png",
+  "initIndex": [
+      "Di-Itsm"
+  ],
+  "permission": [
+    {
+        "name": "itsm项目",
+        "id": "project",
+        "child": [
+            {
+                "name": "创建项目",
+                "value": "project_create"
+            },
+            {
+                "name": "项目查看",
+                "value": "project_view"
+            },
+            {
+                "name": "项目编辑",
+                "value": "project_edit"
+            },
+            {
+                "name": "系统配置管理",
+                "value": "system_settings_manage"
+            }
+        ]
+    },
+    {
+        "name": "itsm服务",
+        "id": "service",
+        "child": [
+            {
+                "name": "服务创建",
+                "value": "service_create"
+            },
+            {
+                "name": "服务管理",
+                "value": "service_manage"
+            },
+            {
+                "name": "服务查看",
+                "value": "service_view"
+            },
+            {
+                "name": "工单查看",
+                "value": "ticket_view"
+            },
+            {
+                "name": "工单管理",
+                "value": "ticket_management"
+            },
+            {
+                "name": "服务协议管理",
+                "value": "sla_manage"
+            },
+            {
+                "name": "目录新建",
+                "value": "catalog_create"
+            },
+            {
+                "name": "目录编辑",
+                "value": "catalog_edit"
+            },
+            {
+                "name": "目录删除",
+                "value": "catalog_delete"
+            }
+        ]
+    },
+    {
+        "name": "itsm元素",
+        "id": "flow_element",
+        "child": [
+            {
+                "name": "字段新建",
+                "value": "field_create"
+            },
+            {
+                "name": "字段查看",
+                "value": "field_view"
+            },
+            {
+                "name": "字段编辑",
+                "value": "field_edit"
+            },
+            {
+                "name": "字段删除",
+                "value": "field_delete"
+            }
+        ]
+    },
+    {
+        "name": "itsm管理",
+        "id": "management",
+        "child": [
+            {
+                "name": "用户组新建",
+                "value": "user_group_create"
+            },
+            {
+                "name": "用户组编辑",
+                "value": "user_group_edit"
+            },
+            {
+                "name": "用户组删除",
+                "value": "user_group_delete"
+            },
+            {
+                "name": "用户组查看",
+                "value": "user_group_view"
+            },
+            {
+                "name": "触发器新建",
+                "value": "triggers_create"
+            },
+            {
+                "name": "触发器查看",
+                "value": "triggers_view"
+            },
+            {
+                "name": "触发器管理",
+                "value": "triggers_manage"
+            },
+            {
+                "name": "单据状态查看",
+                "value": "ticket_state_view"
+            },
+            {
+                "name": "单据状态管理",
+                "value": "ticket_state_manage"
+            }
+        ]
+    },
+    {
+        "name": "itsmSLA",
+        "id": "sla",
+        "child": [
+            {
+                "name": "SLA 服务模式查看",
+                "value": "sla_calendar_view"
+            },
+            {
+                "name": "SLA 服务模式新建",
+                "value": "sla_calendar_create"
+            },
+            {
+                "name": "SLA 服务模式编辑",
+                "value": "sla_calendar_edit"
+            },
+            {
+                "name": "SLA 服务模式删除",
+                "value": "sla_calendar_delete"
+            },
+            {
+                "name": "SLA 服务协议查看",
+                "value": "sla_agreement_view"
+            },
+            {
+                "name": "SLA 服务协议创建",
+                "value": "sla_agreement_create"
+            },
+            {
+                "name": "SLA 服务协议编辑",
+                "value": "sla_agreement_edit"
+            },
+            {
+                "name": "SLA 服务协议删除",
+                "value": "sla_agreement_delete"
+            },
+            {
+                "name": "SLA 优先级查看",
+                "value": "sla_priority_view"
+            },
+            {
+                "name": "SLA 优先级管理",
+                "value": "sla_priority_manage"
+            }
+        ]
+    },
+    {
+        "name": "itsm流程",
+        "id": "workflow",
+        "child": [
+            {
+                "name": "流程创建",
+                "value": "workflow_create"
+            },
+            {
+                "name": "流程管理",
+                "value": "workflow_manage"
+            },
+            {
+                "name": "流程部署",
+                "value": "workflow_deploy"
+            },
+            {
+                "name": "流程版本还原",
+                "value": "flow_version_restore"
+            },
+            {
+                "name": "流程版本管理",
+                "value": "flow_version_manage"
+            },
+            {
+                "name": "流程元素管理",
+                "value": "flow_element_manage"
+            }
+        ]
+    },
+    {
+        "name": "itsm角色",
+        "id": "role",
+        "child": [
+            {
+                "name": "角色创建",
+                "value": "role_create"
+            },
+            {
+                "name": "角色管理",
+                "value": "role_manage"
+            }
+        ]
+    },
+    {
+        "name": "itsm设置",
+        "id": "settings",
+        "child": [
+            {
+                "name": "设置查看",
+                "value": "settings_view"
+            },
+            {
+                "name": "设置管理",
+                "value": "settings_manage"
+            }
+        ]
+    },
+    {
+        "name": "itsm其他",
+        "id": "others",
+        "child": [
+            {
+                "name": "知识管理",
+                "value": "knowledge_manage"
+            },
+            {
+                "name": "运营数据查看",
+                "value": "operational_data_view"
+            },
+            {
+                "name": "平台管理访问",
+                "value": "platform_manage_access"
+            }
+        ]
+    },
+    {
+        "name": "itsm公共字段",
+        "id": "public_field",
+        "child": [
+            {
+                "name": "公共字段创建",
+                "value": "public_field_create"
+            },
+            {
+                "name": "公共字段编辑",
+                "value": "public_field_edit"
+            },
+            {
+                "name": "公共字段删除",
+                "value": "public_field_delete"
+            },
+            {
+                "name": "公共字段查看",
+                "value": "public_field_view"
+            }
+        ]
+    },
+    {
+        "name": "itsm公共API",
+        "id": "public_api",
+        "child": [
+            {
+                "name": "公共API 查看",
+                "value": "public_api_view"
+            },
+            {
+                "name": "公共API 管理",
+                "value": "public_api_manage"
+            },
+            {
+                "name": "公共API 新建",
+                "value": "public_api_create"
+            }
+        ]
+    },
+    {
+        "name": "itsm全局设置",
+        "id": "global_settings",
+        "child": [
+            {
+                "name": "全局设置查看",
+                "value": "global_settings_view"
+            },
+            {
+                "name": "全局设置管理",
+                "value": "global_settings_manage"
+            }
+        ]
+    },
+    {
+        "name": "itsm通知配置",
+        "id": "notification",
+        "child": [
+            {
+                "name": "通知配置查看",
+                "value": "notification_view"
+            },
+            {
+                "name": "通知配置管理",
+                "value": "notification_manage"
+            }
+        ]
+    },
+    {
+        "name": "itsm任务模板",
+        "id": "task_template",
+        "child": [
+            {
+                "name": "任务模板查看",
+                "value": "task_template_view"
+            },
+            {
+                "name": "任务模板创建",
+                "value": "task_template_create"
+            },
+            {
+                "name": "任务模板管理",
+                "value": "task_template_manage"
+            }
+        ]
+    }
+  ],
+  "type": "app",
+  "executeEnv": "-Dserver.port=7082 -Xms1024m -Xmx1024m"
+}

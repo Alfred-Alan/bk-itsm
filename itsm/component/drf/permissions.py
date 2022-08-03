@@ -26,6 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from django.utils.translation import ugettext as _
 from rest_framework import permissions
 
+from arcana.utils import ArcanaRequest
 from iam import Subject, Action, Resource
 from iam.exceptions import AuthFailedException
 from itsm.component.constants import (
@@ -137,20 +138,21 @@ class IamAuthPermit(permissions.BasePermission):
                 }
             )
 
-        iam_client = IamRequest(request)
-
         project_key = DEFAULT_PROJECT_PROJECT_KEY
+        # iam_client = IamRequest(request)
+        # if resources:
+        #     if hasattr(obj, "project_key"):
+        #         project_key = getattr(obj, "project_key")
+        #     auth_actions = iam_client.batch_resource_multi_actions_allowed(
+        #         set(apply_actions), resources, project_key=project_key
+        #     )
+        #     auth_actions = auth_actions.get(resources[0]["resource_id"], {})
+        # else:
+        #     auth_actions = iam_client.resource_multi_actions_allowed(apply_actions, [])
 
-        if resources:
-            if hasattr(obj, "project_key"):
-                project_key = getattr(obj, "project_key")
-            auth_actions = iam_client.batch_resource_multi_actions_allowed(
-                set(apply_actions), resources, project_key=project_key
-            )
-            auth_actions = auth_actions.get(resources[0]["resource_id"], {})
-        else:
-            auth_actions = iam_client.resource_multi_actions_allowed(apply_actions, [])
-
+        # 替换原有权限验证逻辑 
+        arcana_client = ArcanaRequest(request)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
         if self.auth_result(auth_actions, apply_actions):
             return True
 

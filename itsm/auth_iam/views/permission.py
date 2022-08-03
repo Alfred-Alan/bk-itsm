@@ -30,6 +30,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from django.conf import settings
+from arcana.utils import ArcanaRequest
 from itsm.component.drf.mixins import ApiGenericMixin
 from itsm.component.constants.iam import RESOURCES, ACTIONS, BK_IAM_SYSTEM_NAME, PLATFORM_PERMISSION
 from itsm.auth_iam.utils import IamRequest
@@ -63,8 +64,12 @@ class PermissionViewSet(ApiGenericMixin, ViewSet):
 
     @action(detail=False, methods=["get"])
     def platform_permission(self, request):
-        iam_client = IamRequest(request)
+        # iam_client = IamRequest(request)
+        # auth_actions = iam_client.resource_multi_actions_allowed(verify_actions, [])
+
+        # 替换原有权限验证逻辑
+        arcana_client = ArcanaRequest(request)
         verify_actions = PLATFORM_PERMISSION
-        auth_actions = iam_client.resource_multi_actions_allowed(verify_actions, [])
+        auth_actions = arcana_client.multi_actions_allowed(verify_actions)
         
         return Response(auth_actions)

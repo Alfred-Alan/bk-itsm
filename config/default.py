@@ -106,6 +106,7 @@ INSTALLED_APPS += (
     "itsm.monitor",
     "blueapps.opentelemetry.instrument_app",
     "itsm.plugin_service",
+    'arcana'
 )
 
 INSTALLED_APPS = ("itsm.helper",) + INSTALLED_APPS
@@ -770,6 +771,8 @@ BK_IAM_SYSTEM_NAME = os.getenv("BKAPP_BK_IAM_SYSTEM_NAME", "ITSM")
 
 # 本地开发需配置环境变量
 BK_IAM_INNER_HOST = os.environ.get("BK_IAM_V3_INNER_HOST", None)
+# BK_IAM_INNER_HOST = os.environ.get("BK_IAM_V3_INNER_HOST", "http://192.168.100.160:5001")
+ARCANA_INNER_HOST = os.environ.get("ARCANA_INNER_HOST", "http://192.168.100.244:7088")
 
 # 监控变量
 TAM_PROJECT_ID = os.environ.get("TAM_PROJECT_ID", "")
