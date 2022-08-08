@@ -39,7 +39,7 @@ from itsm.component.dlls.component import ComponentLibrary
 from itsm.component.drf import viewsets as component_viewsets
 from itsm.component.drf.mixins import DynamicListModelMixin
 from itsm.component.drf.permissions import IamAuthProjectViewPermit
-from itsm.component.esb.backend_component import bk
+from itsm.postman.request_component import bk
 from itsm.component.exceptions import NotAllowedError, ParamError, RpcAPIError
 from itsm.component.utils.client_backend_query import get_components, get_systems
 from itsm.component.utils.misc import JsonEncoder
@@ -212,13 +212,16 @@ class RemoteApiViewSet(DynamicListModelMixin, ModelViewSet):
             query_params = request.data.get("req_body", {})
         else:
             query_params = request.data.get("req_params", {})
-
+        req_headers = request.data.get("req_headers", {})
+        
         api_config = api.get_api_config(query_params)
 
         # overwrite map_code
         map_code = request.data.get("map_code", "")
         before_req = request.data.get("before_req", "")
         api_config.update(map_code=map_code, before_req=before_req)
+        if req_headers:
+            api_config.update(headers=req_headers)
 
         rsp = bk.http(config=api_config)
 

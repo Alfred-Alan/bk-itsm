@@ -67,7 +67,8 @@ APP_ID = os.environ.get("BKPAAS_APP_ID", "bk_itsm")
 # SaaS安全密钥，注意请勿泄露该密钥
 APP_TOKEN = os.environ.get("BKPAAS_APP_SECRET", "764b812b-727b-4db8-9c46-a34ad5bd9278")
 # 蓝鲸SaaS平台URL，例如 http://paas.bking.com
-BK_PAAS_HOST = os.environ.get("BKAPP_PAAS_HOST", "http://paas.di-matrix.com/")
+# BK_PAAS_HOST = os.environ.get("BKAPP_PAAS_HOST", "http://paas.di-matrix.com/")
+BK_PAAS_HOST = os.environ.get("BKAPP_PAAS_HOST", "")
 RUN_VER = os.environ.get("RUN_VER", RUN_VER)
 OPEN_VER = "enterprise"
 

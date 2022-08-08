@@ -47,6 +47,30 @@
     </bk-input>
     <div class="mt20 bk-run-configure">
       <bk-collapse v-model="activeName">
+        <bk-collapse-item name="0" :ext-cls="'bk-border-line'">
+          Headers
+          <template slot="content" v-if="DetailInfo.req_headers && DetailInfo.req_headers.length">
+            <ul class="mb10">
+              <li v-for="(item, index) in DetailInfo.req_headers" :key="index" class="bk-run-content">
+                <bk-input style="width: 130px; margin-right: 10px;"
+                  class="bk-run-input"
+                  :disabled="trueStatus"
+                  v-model="item.name">
+                </bk-input>
+                <bk-checkbox
+                  :true-value="1"
+                  :false-value="0"
+                  v-model="item.is_necessary">
+                </bk-checkbox>
+                <span>=</span>
+                <bk-input style="width: calc(100% - 185px); float: right;"
+                  class="bk-run-input"
+                  v-model="item.value">
+                </bk-input>
+              </li>
+            </ul>
+          </template>
+        </bk-collapse-item>
         <bk-collapse-item name="1" :ext-cls="'bk-border-line'">
           Query
           <template slot="content" v-if="DetailInfo.req_params && DetailInfo.req_params.length">
@@ -58,8 +82,8 @@
                   v-model="item.name">
                 </bk-input>
                 <bk-checkbox
-                  :true-value="trueStatus"
-                  :false-value="falseStatus"
+                  :true-value="1"
+                  :false-value="0"
                   v-model="item.is_necessary">
                 </bk-checkbox>
                 <span>=</span>

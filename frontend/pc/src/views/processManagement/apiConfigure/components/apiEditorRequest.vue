@@ -22,6 +22,63 @@
 
 <template>
   <div class="bk-api-editor-request">
+
+    <!-- Headers -->
+    <p class="bk-basic-p">Headers：</p>
+    <ul class="bk-request-ul">
+      <template v-if="basicInfo.req_headers && basicInfo.req_headers.length">
+        <li v-for="(item, index) in basicInfo.req_headers" :key="index">
+          <div class="bk-request-form">
+            <div class="bk-ul-form">
+              <bk-input :clearable="true"
+                :disabled="basicInfo.is_builtin"
+                :placeholder="$t(`m.systemConfig['参数名称']`)"
+                v-model="item.name">
+              </bk-input>
+            </div>
+            <div class="bk-ul-form">
+              <bk-select v-model="item.is_necessary"
+                :clearable="false"
+                :font-size="'medium'"
+                :disabled="basicInfo.is_builtin">
+                <bk-option v-for="option in necessaryList"
+                  :key="option.id"
+                  :id="option.id"
+                  :name="option.name">
+                </bk-option>
+              </bk-select>
+            </div>
+            <div class="bk-ul-form">
+              <bk-input
+                :clearable="true"
+                :disabled="basicInfo.is_builtin"
+                :placeholder="$t(`m.systemConfig['参数示例']`)"
+                v-model="item.sample">
+              </bk-input>
+            </div>
+            <div class="bk-ul-form">
+              <bk-input
+                :clearable="true"
+                :disabled="basicInfo.is_builtin"
+                :placeholder="$t(`m.systemConfig['备注']`)"
+                v-model="item.desc">
+              </bk-input>
+            </div>
+          </div>
+          <div class="bk-request-operat" v-if="!basicInfo.is_builtin">
+            <span class="bk-add-node" @click="addLine(basicInfo.req_headers, index)">
+              <i class="bk-icon icon-plus" style="font-size: 24px"></i>
+            </span>
+            <span class="bk-reduce-node"
+              :class="{ 'bk-reduce-disable': basicInfo.req_headers.length === 1 }"
+              @click="deleteLine(basicInfo.req_headers, index)">
+              <i class="bk-icon icon-close" style="font-size: 24px"></i>
+            </span>
+          </div>
+        </li>
+      </template>
+    </ul>
+
     <p class="bk-basic-p" v-if="basicInfo.method === 'GET'">Query：</p>
     <p class="bk-basic-p" v-if="basicInfo.method === 'POST'">Body：</p>
     <!-- Query -->

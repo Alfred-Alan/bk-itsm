@@ -52,6 +52,24 @@ class BaseClient(object):
     def get_client(self, data):
         raise NotImplementedError
 
+    def request(self, method, url, params=None, data=None, **kwargs):
+        """Send request
+        """
+        # determine whether access test environment of third-party system
+        headers = kwargs.pop('headers', {})
+
+        params, data = self.merge_params_data_with_common_args(
+            method, params, data)
+        logger.debug(
+            'Calling %s %s with params=%s, data=%s, headers=%s',
+            method,
+            url,
+            params,
+            data,
+            headers)
+        return requests.request(method, url, params=params, data=data, verify=False, timeout=20,
+                                headers=headers, **kwargs)
+
     def merge_params_data_with_common_args(
         self, method, params, data
     ):
@@ -68,23 +86,19 @@ class BaseClient(object):
             data = json.dumps(_data)
         return params, data
 
+
+class OpenClient(object):
+
+    def __init__(self):
+        self.client = BaseClient()
+
+    @classmethod
+    def build_absolute_url(cls, path, domain=None):
+        system_domain = domain if domain else ''
+        return urllib.parse.urljoin(system_domain, path)
+
     def request(self, method, path, data, domain=None, **kwargs):
-
-        try:
-            request_object = get_request()
-            data["__remote_user__"] = getattr(
-                request_object.user, "username", settings.SYSTEM_CALL_USER
-            )
-        except BaseException:
-            pass
-
-        client = self.get_client(data)
         url = self.build_absolute_url(path, domain)
-
-        # 根据__env__强制取消测试环境
-        if data.pop("__env__", None) == "product":
-            client.set_use_test_env(False)
-
         api_auth = data.pop("api_auth", None)
         if api_auth:
             kwargs.update({"auth": api_auth})
@@ -100,9 +114,11 @@ class BaseClient(object):
                 # 发送格式为文本的时候，直接用requests发送请求
                 res = self.raw_post_request(url, data=data.get("raw", ""), **kwargs)
             else:
-                res = client.request("POST", url, data=data, **kwargs)
+                res = self.client.request("POST", url, data=data, **kwargs)
+                print(url, data, kwargs)
         else:
-            res = client.request("GET", url, params=data, **kwargs)
+            res = self.client.request("GET", url, params=data, **kwargs)
+
         if not res:
             message = "empty response: {}".format(url)
             # 获取tapd授权链接
@@ -146,83 +162,9 @@ class BaseClient(object):
         )
 
 
-class OpenClient(BaseClient):
-    from blueking.component.open import conf
-    from blueking.component.open.shortcuts import get_client_by_user
-
-    domain = conf.COMPONENT_SYSTEM_HOST
-
-    @classmethod
-    def build_absolute_url(cls, path, domain=None):
-        system_domain = domain if domain else cls.domain
-        return urllib.parse.urljoin(system_domain, path)
-
-    @classmethod
-    def get_client(cls, data):
-        # 支持从外部指定请求所用的用户身份
-        if data.get("__remote_user__"):
-            client = cls.get_client_by_user(data.pop("__remote_user__"))
-        else:
-            client = cls.get_client_by_user(settings.SYSTEM_CALL_USER)
-
-        return client
-
-
-class IeodClient(BaseClient):
-    try:
-        from blueking.component.ieod import conf
-        from blueking.component.ieod.shortcuts import get_client_by_user
-
-        domain = conf.COMPONENT_SYSTEM_HOST
-    except Exception:
-        pass
-
-    @classmethod
-    def build_absolute_url(cls, path, domain=None):
-        system_domain = domain if domain else cls.domain
-        return urllib.parse.urljoin(system_domain, path)
-
-    @classmethod
-    def get_common_args(self, username):
-        try:
-            import bkoauth
-
-            # 新的access_token，会自动根据refresh_token刷新
-            access_token_obj = bkoauth.get_access_token_by_user(username)
-            access_token = access_token_obj.access_token
-            common_args = {"access_token": access_token}
-            logger.info("[IeodClient] 用户access_token获取成功")
-            return common_args
-        except Exception:
-            logger.info("根据用户获取access_token 失败, username={}".format(username))
-            return {}
-
-    @classmethod
-    def get_client(cls, data):
-        # 支持从外部指定请求所用的用户身份
-        if data.get("__remote_user__"):
-            user = data.pop("__remote_user__")
-            common_args = cls.get_common_args(user)
-            logger.info("[IeodClient] execute, user={}".format(user))
-            client = cls.get_client_by_user(user, **common_args)
-        else:
-            client = cls.get_client_by_user(settings.SYSTEM_CALL_USER)
-
-        return client
-
-
-ENV_MAP = {
-    "open": {"client": OpenClient},
-    "ieod": {"client": IeodClient},
-}
-
-
 class BkComponent(object):
-    def __init__(self, app_code, app_secret, ver="open"):
-        self.app_code = app_code
-        self.app_secret = app_secret
-        self._conf = ENV_MAP[ver]
-        self.client = self._conf["client"]()
+    def __init__(self):
+        self.client = OpenClient()
 
     def http(self, config):
 
@@ -307,4 +249,4 @@ class BkComponent(object):
         return data
 
 
-bk = BkComponent(APP_ID, APP_TOKEN, ver=RUN_VER)
+bk = BkComponent()
