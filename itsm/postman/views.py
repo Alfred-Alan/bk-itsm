@@ -133,25 +133,24 @@ class RemoteSystemViewSet(ModelViewSet):
     def get_systems(self, request):
         """接入系统列表"""
 
-        systems = get_systems()
+        # systems = get_systems()
 
         project_key = request.query_params.get("project_key", 0)
-
         data = []
         codes = set()
 
-        # ESB接入的系统
-        for sys in systems:
-            data.append(
-                {
-                    "name": sys.get("label") or sys.get("name", ""),
-                    "code": sys.get("name", ""),
-                    "domain": sys.get("domain", ""),
-                    "desc": sys.get("remark", ""),
-                    "system_id": sys.get("id", 0),
-                }
-            )
-            codes.add(sys.get("name"))
+        # # ESB接入的系统
+        # for sys in systems:
+        #     data.append(
+        #         {
+        #             "name": sys.get("label") or sys.get("name", ""),
+        #             "code": sys.get("name", ""),
+        #             "domain": sys.get("domain", ""),
+        #             "desc": sys.get("remark", ""),
+        #             "system_id": sys.get("id", 0),
+        #         }
+        #     )
+        #     codes.add(sys.get("name"))
 
         # 自定义添加的系统
         for sys in self.queryset.exclude(code__in=codes, project_key=project_key):

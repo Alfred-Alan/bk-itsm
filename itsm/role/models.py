@@ -395,15 +395,14 @@ class BKUserRole(models.Model):
     @classmethod
     def get_or_update_user_roles(cls, username):
         """更新个人角色"""
-
         roles = {
             "cmdb": {},
             "organization": [],
         }
         # 更新cmdb角色
-        cmdb_roles = UserRole.get_cmdb_role_by_user(username)
-        # {'bk_biz_developer': {'role_id': 19, 'bizs': set()}, 'bk_biz_maintainer': {'role_id': 20, 'bizs': set()}, 'bk_biz_productor': {'role_id': 21, 'bizs': set()}, 'bk_biz_tester': {'role_id': 22, 'bizs': set()}, 'operator': {'role_id': 23, 'bizs': set()}}
-        roles.update(cmdb=cmdb_roles)
+        # cmdb_roles = UserRole.get_cmdb_role_by_user(username)
+        # # {'bk_biz_developer': {'role_id': 19, 'bizs': set()}, 'bk_biz_maintainer': {'role_id': 20, 'bizs': set()}, 'bk_biz_productor': {'role_id': 21, 'bizs': set()}, 'bk_biz_tester': {'role_id': 22, 'bizs': set()}, 'operator': {'role_id': 23, 'bizs': set()}}
+        # roles.update(cmdb=cmdb_roles)
 
         # 更新组织架构角色
         if SystemSettings.objects.get(key=ORGANIZATION_KEY).value == SWITCH_ON:

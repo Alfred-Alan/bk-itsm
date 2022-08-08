@@ -95,7 +95,7 @@ from itsm.component.constants import (
     SUSPEND_OPERATE,
     SYS,
     SYSTEM_OPERATE,
-    TASK_SOPS_STATE,
+    # TASK_SOPS_STATE,  # 关闭标准运维
     TASK_STATE,
     TERMINATE_OPERATE,
     TERMINATED,
@@ -1124,7 +1124,7 @@ class Status(Model):
         stop_status = copy.deepcopy(self.STOPPED_STATUS)
         if self.type in [
             TASK_STATE,
-            TASK_SOPS_STATE,
+            # TASK_SOPS_STATE,  # 关闭标准运维
             TASK_DEVOPS_STATE,
             WEBHOOK_STATE,
             BK_PLUGIN_STATE,
@@ -3117,7 +3117,7 @@ class Ticket(Model, BaseTicket):
                 if state.type
                 in [
                     TASK_STATE,
-                    TASK_SOPS_STATE,
+                    # TASK_SOPS_STATE,  # 关闭标准运维
                     TASK_DEVOPS_STATE,
                     WEBHOOK_STATE,
                     BK_PLUGIN_STATE,
@@ -4410,6 +4410,7 @@ class Ticket(Model, BaseTicket):
     def update_organization_ticket(self):
         try:
             departments = get_user_departments(self.creator, id_only=False)
+            print(departments)
             for department in departments:
                 family = list(reversed(department["family"]))
                 second_level_id, second_level_name = (

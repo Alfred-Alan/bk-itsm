@@ -70,7 +70,7 @@ def index(request):
         {
             "is_vip": "true",
             # "is_vip": "true" if request.META.get("HTTP_X_TIF_UID", "") else "false",
-            "chname": request.user.get_property("chname"),
+            # "chname": request.user.get_property("chname"),
             "username": request.user.username,
             "all_access": UserRole.get_access_by_user(request.user.username),
             "BK_CC_HOST": settings.BK_CC_HOST,
@@ -80,7 +80,8 @@ def index(request):
             else 0,
             "CUSTOM_TITLE": TITLE(),
             "USE_LOG": "true",
-            "LOGIN_URL": LOGIN_URL,
+            "LOGIN_URL": '',
+            # "LOGIN_URL": LOGIN_URL,
             "LOG_NAME": settings.LOG_NAME or _("流程服务"),
             "IS_USE_INVITE_SMS": "true" if settings.IS_USE_INVITE_SMS else "false",
             "BK_USER_MANAGE_HOST": BK_USER_MANAGE_HOST,

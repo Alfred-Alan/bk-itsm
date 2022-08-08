@@ -40,13 +40,13 @@
         </div>
       </div>
       <div class="link-area">
-        <div class="link-item" v-for="(item, index) in links" :key="index">
+        <!--<div class="link-item" v-for="(item, index) in links" :key="index">
           {{item.text}}
           <a :href="item.href" target="_blank" class="link-btn">
             {{ item.btn }}
             <i class="bk-itsm-icon icon-itsm-icon-three-seven"></i>
           </a>
-        </div>
+        </div>-->
       </div>
     </div>
   </div>

@@ -46,10 +46,11 @@ def app_ready_handler(sender, **kwargs):
     CustomNotice.init_default_template()
     print("update notify system_settings")
     SystemSettings.init_default_settings()
-    print("create default remote sys")
-    RemoteSystem.init_default_system()
-    print("create default remote api")
-    RemoteApi.init_default_remote_api()
+    # 关闭蓝鲸接口
+    # print("create default remote sys")
+    # RemoteSystem.init_default_system()
+    # print("create default remote api")
+    # RemoteApi.init_default_remote_api()
     # 解析release.md文件将版本日志信息存入存入数据库
     ReleaseVersionLog.objects.init_version_log_info("zh-cn")
     ReleaseVersionLog.objects.init_version_log_info("en")
@@ -57,8 +58,10 @@ def app_ready_handler(sender, **kwargs):
     TemplateField.objects.create_default_template_field(DEFAULT_TEMPLATE_FIELDS)
     print("create default tables")
     Table.objects.init_table(DEFAULT_TABLE)
-    print("create default workflows")
-    Workflow.objects.init_builtin_workflow()
+    
+    # print("create default workflows")
+    # Workflow.objects.init_builtin_workflow()
+
     print("create default services")
     Service.objects.init_builtin_services()
     print("init superusers")

@@ -47,7 +47,9 @@ def translate_constant_2(constant):
 def init_notify_type_choice():
     """获取ESB接入通知类型"""
     try:
-        result = client_backend.cmsi.get_msg_type()
+        # result = client_backend.cmsi.get_msg_type()
+        result = [{'is_active': True, 'label': '邮件', 'type': 'mail', 'icon': ''},
+                  {'is_active': True, 'label': '短信', 'type': 'sms', 'icon': ''}]
         notify_type_choice = [
             (NOTIFY_TYPE_MAPPING.get(ins["type"], ins["type"].upper()), ins["label"])
             for ins in result
@@ -83,7 +85,7 @@ def get_third_party_notify_type():
     """获取第三方通知类型"""
     try:
         notify_type_list = list(
-            Notify.objects.exclude(type__in=BUILTIN_NOTIFY_TYPE).values_list(
+            Notify.objects.filter(type__in=BUILTIN_NOTIFY_TYPE).values_list(
                 "type", flat=True
             )
         )

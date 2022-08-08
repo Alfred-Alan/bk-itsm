@@ -2,16 +2,8 @@ import os
 import json
 from django.conf import settings
 from django.core.cache import cache
-from blueapps.utils import get_request
 
 from common.log import logger
-from itsm.component.constants import (
-    PUBLIC_PROJECT_PROJECT_KEY,
-)
-from itsm.component.exceptions import IamGrantCreatorActionError
-from itsm.project.models import Project
-from itsm.workflow.models import TemplateField
-
 from arcana.api.client import Client, logger
 from iam.exceptions import AuthAPIError
 from itsm.component.constants import CACHE_30MIN
@@ -23,13 +15,24 @@ class ArcanaRequest(object):
     """
 
     def __init__(self, request):
-        token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzc29BdXRoIjoiIiwidG9rZW5JZCI6IiIsInVzZXJOYW1lIjoibm9pdHNtIiwiZXhwIjoxNjYwMTE1MzM0fQ.coIGKP4c1d382dTNZkjbiPGP_yXJO_-036-djP9Irw4'
+
+        if request.GET.get("ticket", ""):
+            self.token = request.GET.get("ticket", "")
+        else:
+            self.token = request.COOKIES.get("ticket", "")
+
         self.arcana_host = settings.ARCANA_INNER_HOST
-        self._client = Client(token, self.arcana_host)
+        self._client = Client(self.token, self.arcana_host)
         self.request = request
         self.username = request.user.username
-    
-    def _permission_query(self): # noqa
+
+    def user_group(self):
+        ok, message, data = self._client.permission_group()
+        if not ok:
+            raise AuthAPIError(message)
+        return ok, message, data
+
+    def _permission_query(self):  # noqa
         """
         获取itsm权限
         """
@@ -61,7 +64,7 @@ class ArcanaRequest(object):
         """
         action_policies = self._permission_query()
         return list(filter(lambda a: a['id'] in actions, action_policies))
-    
+
     def multi_actions_allowed(self, actions: []):
         """
         批量操作鉴权
@@ -78,7 +81,7 @@ class ArcanaRequest(object):
             for action in actions:
                 actions_allowed[action] = False
             return actions_allowed
-        
+
         # 所需权限和已有权限鉴权
         for action_policy in action_policies:
             action = action_policy["id"]
@@ -116,4 +119,3 @@ class ArcanaRequest(object):
             actions = self.get_or_update_actions()
             cache.set(cache_key, actions, CACHE_30MIN)
         return cache.get(cache_key)
-

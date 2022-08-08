@@ -82,7 +82,7 @@
               <li class="operate-item">
                 <span @click="onGoToProjectList">{{ $t(`m["项目管理"]`) }}</span>
               </li>
-              <li class="operate-item">
+              <li class="operate-item" v-if="loginUrl !== ''">
                 <span data-test-id="navigation-span-logout" @click="onLogOut">{{ $t(`m.wiki["退出"]`) }}</span>
               </li>
             </ul>
@@ -220,6 +220,7 @@
         isEditDialogShow: false,
         isVersionLogShow: false,
         isCreateTicketDialogShow: false,
+        loginUrl: window.login_url,
         projectForm: {
           name: '',
           key: '',
@@ -439,6 +440,7 @@
         this.$router.push({ name: 'ProjectList' });
       },
       onLogOut() {
+        this.$store.dispatch('user/logOut');
         location.href = `${window.location.protocol}//${window.location.host}${window.login_url}?c_url=${window.location.href}`;
       },
       // 切换项目

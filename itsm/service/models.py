@@ -347,11 +347,11 @@ class Service(ObjectManagerMixin, Model):
     def permission_filter(cls, username):
         conditions = [Q(display_type__in=["OPEN", "API"])]
 
-        # 组织角色
-        for organization in UserRole.get_user_roles(username)["organization"]:
-            conditions.append(
-                Q(display_type="ORGANIZATION") & Q(display_role__contains=organization)
-            )
+        # # 组织角色
+        # for organization in UserRole.get_user_roles(username)["organization"]:
+        #     conditions.append(
+        #         Q(display_type="ORGANIZATION") & Q(display_role__contains=organization)
+        #     )
 
         # 通用角色
         for role in UserRole.get_general_role_by_user(dotted_name(username)):

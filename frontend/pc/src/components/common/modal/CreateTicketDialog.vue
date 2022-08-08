@@ -168,12 +168,13 @@
     watch: {
       isShow(val) {
         if (val) {
-          this.getAllService();
           this.getServiceClassify();
+          this.getAllService();
         }
       },
     },
     created() {
+      this.getServiceClassify();
       this.searchHandler = debounce(500, (val) => {
         this.onServiceSearch(val);
       });

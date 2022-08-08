@@ -155,7 +155,8 @@ MIDDLEWARE = (
     "weixin.core.middlewares.WeixinAuthenticationMiddleware",
     "weixin.core.middlewares.WeixinLoginMiddleware",
     # 'blueapps.account.middlewares.WeixinLoginRequiredMiddleware',
-    "blueapps.account.middlewares.LoginRequiredMiddleware",
+    # "blueapps.account.middlewares.LoginRequiredMiddleware",
+    "blueapps.account.middlewares.BkJwtLoginRequiredMiddleware",
     # 'blueapps.middleware.xss.middlewares.CheckXssMiddleware',
     # exception middleware
     "blueapps.core.exceptions.middleware.AppExceptionMiddleware",
@@ -419,8 +420,8 @@ CACHES.update(
 # Django 项目配置 - 其他
 # ==============================================================================
 CSRF_COOKIE_PATH = "/"
-CSRF_COOKIE_NAME = "bkitsm_csrftoken"
-SESSION_COOKIE_NAME = "bkitsm_sessionid"
+CSRF_COOKIE_NAME = "itsm_csrftoken"
+SESSION_COOKIE_NAME = "itsm_sessionid"
 
 # Template
 MAKO_DIR_NAME = "mako_templates"
@@ -799,10 +800,17 @@ BK_IAM_ESB_PAAS_HOST = os.environ.get("BK_IAM_ESB_PAAS_HOST", IAM_ESB_PAAS_HOST)
 
 IAM_INITIAL_FILE = os.environ.get("BKAPP_IAM_INITIAL_FILE", "")
 
+DEFAULT_SYS_FILE_PATH = os.environ.get("DEFAULT_SYS_FILE_PATH", "/data/itsm")
+
 CALLBACK_AES_KEY = "APPROVAL_RESULT"
 
+# FRONTEND_URL = os.environ.get("BKAPP_FRONTEND_URL") or os.path.join(
+#     BK_PAAS_HOST, os.environ.get("BKAPP_ITSM_URL", "o/bk_itsm/")
+# )
+
+# 适配arcana
 FRONTEND_URL = os.environ.get("BKAPP_FRONTEND_URL") or os.path.join(
-    BK_PAAS_HOST, os.environ.get("BKAPP_ITSM_URL", "o/bk_itsm/")
+    ARCANA_INNER_HOST, os.environ.get("BKAPP_ITSM_URL", "itsm/")
 )
 
 MY_OA_CALLBACK_URL = os.environ.get("MY_OA_CALLBACK_URL", "")

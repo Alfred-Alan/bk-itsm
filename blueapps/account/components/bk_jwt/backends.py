@@ -19,11 +19,14 @@ BK JWT - settings option
 """
 
 import logging
+import time
 
+from django.contrib.auth import (logout as auth_logout)
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.utils.translation import ugettext_lazy as _
 
+from arcana.utils import ArcanaRequest
 from blueapps.account import get_user_model
 from blueapps.utils.jwt_client import JWTClient
 
@@ -32,24 +35,28 @@ logger = logging.getLogger("component")  # pylint: disable=invalid-name
 
 class BkJwtBackend(ModelBackend):
     def authenticate(self, request=None):
-        logger.debug(u"进入 BK_JWT 认证 Backend")
+        logger.debug(u"进入 ARCANA_JWT 认证 Backend")
 
         try:
-            verify_data = self.verify_bk_jwt_request(request)
-        except Exception as err:  # pylint: disable=broad-except
-            logger.exception(u"[BK_JWT]校验异常: %s" % err)
+            # verify_data = self.verify_bk_jwt_request(request)
+            # 校验arcana jwt
+            verify_data = self.verify_ac_jwt_request(request)
+        except Exception as err:  # pylint: disable=broad-except.
+            auth_logout(request)
+            logger.exception(u"[ARCANA_JWT]校验异常: %s" % err)
             return None
 
         if not verify_data["result"] or not verify_data["data"]:
-            logger.error(u"BK_JWT 验证失败： %s" % verify_data)
+            auth_logout(request)
+            logger.error(u"ARCANA_JWT 验证失败： %s" % verify_data)
             return None
 
         user_info = verify_data["data"]["user"]
         user_model = get_user_model()
         try:
             user, _ = user_model.objects.get_or_create(
-                defaults={"nickname": user_info["bk_username"]},
-                username=user_info["bk_username"],
+                defaults={"nickname": user_info["userName"]},
+                username=user_info["userName"],
             )
         except Exception as err:  # pylint: disable=broad-except
             logger.exception(u"自动创建 & 更新 User Model 失败: %s" % err)
@@ -121,4 +128,42 @@ class BkJwtBackend(ModelBackend):
 
         ret["result"] = True
         ret["data"] = {"user": user, "app": app}
+        return ret
+
+    @staticmethod
+    def verify_ac_jwt_request(request):
+        """
+        验证 BK_JWT 请求
+        @param {string} x_bkapi_jwt JWT请求头
+        @return {dict}
+            {
+                'result': True,
+                'message': '',
+                'data': {
+                    'user': {
+                        'userName': '调用方用户',
+                        ....
+                    }
+                }
+            }
+        """
+        ret = {"result": False, "message": "", "data": {}}
+
+        jwt = JWTClient(request)
+        if not jwt.is_valid:
+            ret["message"] = _(u"jwt_invalid: %s") % jwt.error_message
+            return ret
+        
+        # 判断token过期
+        if time.time() >= jwt.payload.get("exp", 0):
+            ret["message"] = _(u"jwt 已经过期！")
+            return ret
+
+        user = jwt.get_user_info()
+        if not user["userName"]:
+            ret["message"] = _(u"无法获取用户信息")
+            return ret
+
+        ret["result"] = True
+        ret["data"] = {"user": user, "payload": jwt.payload}
         return ret

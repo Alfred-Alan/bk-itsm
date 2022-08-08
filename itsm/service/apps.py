@@ -74,5 +74,7 @@ class ServiceConfig(AppConfig):
         post_migrate.connect(app_ready_handler, sender=self)
         post_migrate.connect(register_builtin_approve_service, sender=self)
         post_migrate.connect(register_builtin_iam_service, sender=self)
-        post_migrate.connect(register_builtin_service, sender=self)
-        post_migrate.connect(register_builtin_bkbase_service, sender=self)
+
+        # 关闭蓝鲸服务
+        # post_migrate.connect(register_builtin_service, sender=self)
+        # post_migrate.connect(register_builtin_bkbase_service, sender=self)

@@ -46,7 +46,7 @@ from itsm.component.constants import (
     SIGN_STATE,
     START_STATE,
     SUPPORTED_TYPE,
-    TASK_SOPS_STATE,
+    # TASK_SOPS_STATE,  # 关闭标准运维节点
     TASK_STATE,
     VIRTUAL_STATE,
     TICKET_GLOBAL_VARIABLES,
@@ -126,8 +126,8 @@ class PipelineWrapper(object):
             act.component.inputs.poll_interval = Var(
                 type=Var.PLAIN, value=str(state.get("poll_interval", 1))
             )
-        elif state["type"] == TASK_SOPS_STATE:
-            act = ServiceActivity("bk_sops")
+        # elif state["type"] == TASK_SOPS_STATE:  # 关闭标准运维节点
+        #     act = ServiceActivity("bk_sops")
         # 开始节点state['type'] == NORMAL_STATE and state['is_builtin']
         elif state["type"] == NORMAL_STATE and state["is_builtin"]:
             act = ServiceActivity("itsm_create")
@@ -602,7 +602,7 @@ class PipelineWrapper(object):
                     NORMAL_STATE,
                     ROUTER_STATE,
                     TASK_STATE,
-                    TASK_SOPS_STATE,
+                    # TASK_SOPS_STATE,  # 关闭标准运维节点
                     SIGN_STATE,
                     VIRTUAL_STATE,
                     APPROVAL_STATE,

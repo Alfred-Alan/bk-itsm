@@ -55,12 +55,6 @@ class UserView(LoginExemptMixin, View):
 
 class AllUsersView(LoginExemptMixin, View):
     def get(self, request):
-        # 非ESB的请求需要验证登录态 bk_token
-        if not is_request_from_esb(request):
-            # 验证Token参数
-            is_valid, user, message = validate_bk_token(request)
-            if not is_valid:
-                return ApiV1FailJsonResponse(message, code=ApiErrorCodeEnum.PARAM_NOT_VALID)
 
         # 获取用户角色参数,空为所有用户
         role = request.GET.get('role', '')

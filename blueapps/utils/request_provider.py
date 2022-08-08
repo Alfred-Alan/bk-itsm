@@ -85,7 +85,9 @@ class RequestProvider(MiddlewareMixin):
         )
 
         # JWT请求
-        request.is_bk_jwt = lambda: bool(request.META.get("HTTP_X_BKAPI_JWT", ""))
+        # request.is_bk_jwt = lambda: bool(request.META.get("HTTP_X_BKAPI_JWT", ""))
+        # 改为接入arcana jwt token
+        request.is_ar_jwt = lambda: bool(request.COOKIES.get("ticket", ""))
 
         self._request_pool[get_ident()] = request
         return None

@@ -85,9 +85,10 @@ class BaseClient(object):
                 res = self.raw_post_request(url, data=data.get("raw", ""), **kwargs)
             else:
                 res = client.request("POST", url, data=data, **kwargs)
+                print(url, data, kwargs)
         else:
             res = client.request("GET", url, params=data, **kwargs)
-
+        print(res)
         if not res:
             message = "empty response: {}".format(url)
             # 获取tapd授权链接

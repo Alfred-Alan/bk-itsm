@@ -370,7 +370,7 @@ def get_transtable(mod):
             "一键清除": "One-click clearance",
             "上次清除时间": "Last clearance time",
             "缓存清除": "Cache clearance",
-            "如需即时更新来自CMDB的最新数据，可以通过手动清除缓存获取最新数据。": "If you need to update the latest data from CMDB in real time, you can get the latest data by manually clearing the cache.",
+            "如需即时更新最新数据，可以通过手动清除缓存获取最新数据。": "If you need to update the latest data from CMDB in real time, you can get the latest data by manually clearing the cache.",
             "组织架构功能开关": "Organizational Architecture Functional Switch",
             "组织架构功能依赖以下服务，请确认依赖可用后开启：": "Organizational architecture functions depend on the following services. Make sure that dependencies are available and open:",
             "蓝鲸用户管理": "Blue King User Management",

@@ -33,6 +33,7 @@ from django.views.i18n import JavaScriptCatalog
 
 # 公共URL配置
 from blueapps.account import views
+from itsm.sites.views import get_footer
 
 urlpatterns = [
     # Django后台数据库管理®
@@ -44,6 +45,8 @@ urlpatterns = [
         url(r'^', include("itsm.api.v1")),
         # 兼容前端请求用户接口
         url(r'^accounts/', include("blueapps.account.urls")),
+        url(r'^logout/$', views.LogoutView.as_view()),
+        url(r'^core/footer/$', get_footer),
     ])),
     # 对外开放的接口
     url(r"^openapi/", include("itsm.api.open_v1")),

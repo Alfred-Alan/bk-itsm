@@ -172,3 +172,24 @@ class ResponseHandler(object):
             "message": _(u"您的登陆请求无法经BK JWT检测，请与管理人员联系"),
         }
         return JsonResponse(context, status=401)
+
+    def build_ar_jwt_401_response(self, request):
+        """
+        arcana JWT error
+        redirect to arcana login
+        http://{{arcana_host}}:7088/login/?c_url={{itsm_host}}/&app_code=bk_itsm
+        """
+        _next = request.build_absolute_uri()
+        if request.method == "GET" and hasattr(
+            settings, "BLUEAPPS_SPECIFIC_REDIRECT_KEY"
+        ):
+            _next = request.GET.get(settings.BLUEAPPS_SPECIFIC_REDIRECT_KEY) or _next
+        if self._conf.ADD_CROSS_PREFIX:
+            _next = self._conf.CROSS_PREFIX + _next
+        _login_url = build_redirect_url(
+            _next,
+            parse.urljoin(resolve_login_url(settings.ARCANA_INNER_HOST, request), self._conf.LOGIN_URL),
+            self._conf.C_URL,
+            extra_args=self._build_extra_args(),
+        )
+        return HttpResponseRedirect(_login_url)

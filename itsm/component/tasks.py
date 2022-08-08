@@ -105,14 +105,17 @@ def update_user_departments(cache_key, username, id_only):
 
     @share_lock(identify=cache_key)
     def update():
-        try:
-            res = client_backend.usermanage.list_profile_departments(
-                {"id": username, "with_family": True}
-            )
-        except ComponentCallError as e:
-            print("获取组织架构失败：username=%s，error=%s" % (username, str(e)))
-            return []
+        # try:
+        #     res = client_backend.usermanage.list_profile_departments(
+        #         {"id": username, "with_family": True}
+        #     )
+        #    
+        # except ComponentCallError as e:
+        #     print("获取组织架构失败：username=%s，error=%s" % (username, str(e)))
+        #     return []
 
+        res = [{'id': '1', 'family': [], 'name': '鼎茂'}]
+        
         if not id_only:
             cache.set(cache_key, res, CACHE_10MIN)
             return res

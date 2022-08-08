@@ -26,13 +26,13 @@
       <permission-content :permission-data="permissionData.permission">
       </permission-content>
       <div class="operation-btns">
-        <bk-button
+        <!--<bk-button
           ext-cls="apply-btn"
           theme="primary"
           :loading="loading"
           @click="applyBtnClick">
           {{hasClicked ? $t(`m.common['已申请']`) : $t(`m.common['去申请']`)}}
-        </bk-button>
+          </bk-button>-->
       </div>
     </div>
   </div>

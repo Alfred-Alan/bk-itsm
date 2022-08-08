@@ -175,6 +175,7 @@ AUTHENTICATION_BACKENDS = (
     "blueapps.account.backends.RioBackend",
     "blueapps.account.backends.WeixinBackend",
     "blueapps.account.backends.UserBackend",
+    "blueapps.account.backends.BkJwtBackend",
     AUTHENTICATION_BACKENDS_DICT.get(LOGIN_TYPE, 'blueapps.account.backends.BkBackend'),
     'django.contrib.auth.backends.ModelBackend',
 )

@@ -43,7 +43,7 @@
               :disabled="!moduleInfo.systemPath.changing || isAllStatusGetting"
               :placeholder="$t(`m.home['请填写路径']`)">
             </bk-input>
-            <div class="bk-left-btn">
+            <!--<div class="bk-left-btn">
               <span
                 v-if="!moduleInfo.systemPath.changing"
                 v-cursor="{ active: !hasPermission(['global_settings_manage']) }"
@@ -77,10 +77,10 @@
                 @click="allSwitchChange('off','systemPath')">
                 {{$t(`m.home['提交']`)}}
               </bk-button>
-            </div>
+            </div>-->
           </div>
         </div>
-        <div class="bk-file-right">
+        <!--<div class="bk-file-right">
           <p class="bk-right-title">{{ $t('m.home["附件存储"]') }}</p>
           <ul class="bk-number-ul">
             <li>
@@ -107,7 +107,7 @@
               {{ $t('m.home["进行操作"]') }}
             </li>
           </ul>
-        </div>
+        </div>-->
       </div>
       <!-- 清除缓存 -->
       <div class="bk-system-file">
@@ -144,7 +144,7 @@
           <p class="bk-right-title">{{ $t('m.home["缓存清除"]') }}</p>
           <ul class="bk-number-ul">
             <li>
-              {{ $t('m.home["如需即时更新来自CMDB的最新数据，可以通过手动清除缓存获取最新数据。"]') }}
+              {{ $t('m.home["如需即时更新最新数据，可以通过手动清除缓存获取最新数据。"]') }}
             </li>
           </ul>
         </div>

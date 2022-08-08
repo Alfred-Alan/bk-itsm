@@ -34,7 +34,7 @@
     </permission-content>
     <div class="permission-footer" slot="footer">
       <div class="button-group">
-        <bk-button theme="primary" :loading="loading" @click="goToApply">{{hasClicked ? $t(`m.common['已申请']`) : $t(`m.common['去申请']`)}}</bk-button>
+        <!--<bk-button theme="primary" :loading="loading" @click="goToApply">{{hasClicked ? $t(`m.common['已申请']`) : $t(`m.common['去申请']`)}}</bk-button>-->
         <bk-button theme="default" @click="onCloseDialog">{{$t(`m['取消']`)}}</bk-button>
       </div>
     </div>

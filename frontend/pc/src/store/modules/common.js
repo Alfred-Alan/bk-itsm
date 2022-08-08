@@ -121,10 +121,7 @@ export default {
     // 获取页面 footer
     getPageFooter({ commit, state, dispatch }) {
       return ajax
-        .get(`footer/`, {
-          baseURL: `${window.SITE_URL}core/`,
-        })
-        .then((response) => {
+        .get(`core/footer/`, {}).then((response) => {
           const res = response.data;
           return res;
         });

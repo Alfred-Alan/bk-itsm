@@ -487,7 +487,7 @@ export const m = {
     一键清除: 'One-click Clearance ',
     '上次清除时间：': 'Last Clearance Time: ',
     缓存清除: 'Cache Clearance ',
-    '如需即时更新来自CMDB的最新数据，可以通过手动清除缓存获取最新数据。': 'You can clear the cache manually if you need to get the latest data from CMDB. ',
+    '如需即时更新最新数据，可以通过手动清除缓存获取最新数据。': 'You can clear the cache manually if you need to get the latest data from CMDB. ',
     '组织架构功能依赖以下服务，请确认依赖可用后开启：': 'The function of Organization Structure relies on the following services. Please make sure the dependent services are available before you switch it on: ',
     蓝鲸用户管理: 'BlueKing User Management ',
     '是否启用该功能：': 'Enable Or Not: ',

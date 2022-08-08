@@ -42,5 +42,4 @@ urlpatterns = [
     url(r'^weixin/api/', include('weixin.urls')),
     # wiki
     url(r'^notifications/', get_nyt_pattern()),
-    url(r'^core/footer/$', get_footer),
 ]

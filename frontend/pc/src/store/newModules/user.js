@@ -57,5 +57,11 @@ export default {
         return res;
       });
     },
+    logOut({ commit, state, dispatch }, params) {
+      return ajax.get('logout', params).then((response) => {
+        const res = response.data;
+        return res;
+      });
+    },
   },
 };

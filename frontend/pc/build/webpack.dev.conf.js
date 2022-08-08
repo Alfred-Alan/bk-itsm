@@ -5,10 +5,10 @@ const webpackBase = require('./webpack.base.conf')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 // 本地代理地址
-const HOST = 'paas.di-matrix.com'
+const HOST = '0.0.0.0'
 const ORIGIN = `http://${HOST}`
 const SET_URL = ''
-const AJAX_URL_PREFIX = 'http://dev.paas.di-matrix.com:8000/'
+const AJAX_URL_PREFIX = 'http://0.0.0.0:8000/'
 
 module.exports = merge(webpackBase, {
     mode: 'development',
@@ -32,7 +32,7 @@ module.exports = merge(webpackBase, {
     devtool: 'inline-source-map',
     devServer: {
         contentBase: path.posix.join(__dirname, '../../../static'),
-        host: `dev.${HOST}`,
+        host: HOST,
         port: 8004,
         https: ORIGIN.indexOf('https') > -1,
         hot: true,

@@ -32,11 +32,11 @@ urlpatterns = [
 
     # 用户信息相关
     url(r'^user/', include([
-        # 用户管理
-        url(r'^list/', include([
-            url(r'^$', views.UserPageView.as_view()),
-            url(r'^query/$', views.UserListPage.as_view()),
-        ])),
+        # # 用户管理
+        # url(r'^list/', include([
+        #     url(r'^$', views.UserPageView.as_view()),
+        #     url(r'^query/$', views.UserListPage.as_view()),
+        # ])),
         # [post] user create
         url(r'^$', views.UserView.as_view()),
         # [put/delete] userinfo modify / user delete

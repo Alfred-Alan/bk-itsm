@@ -27,7 +27,7 @@ from django.utils.translation import ugettext as _
 
 from django import forms
 
-from itsm.component.constants import FLOW_STATES, NORMAL_STATE, TASK_STATE, TASK_SOPS_STATE, SIGN_STATE
+from itsm.component.constants import FLOW_STATES, NORMAL_STATE, TASK_STATE, SIGN_STATE
 from itsm.component.dlls.component import BaseComponentForm
 from itsm.postman.rpc.core.component import BaseComponent
 from itsm.workflow.models import Workflow
@@ -58,8 +58,12 @@ class GetTicketFields(BaseComponent):
         except Workflow.DoesNotExist:
             raise
         payload = StateSerializer(
+            # current_workflow.states.filter(
+            #     type__in=[NORMAL_STATE, TASK_STATE, TASK_SOPS_STATE, SIGN_STATE], is_builtin=False
+            # ),
+            # 关闭标准运维
             current_workflow.states.filter(
-                type__in=[NORMAL_STATE, TASK_STATE, TASK_SOPS_STATE, SIGN_STATE], is_builtin=False
+                type__in=[NORMAL_STATE, TASK_STATE, SIGN_STATE], is_builtin=False
             ),
             many=True,
         ).data

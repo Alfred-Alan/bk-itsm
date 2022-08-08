@@ -18,59 +18,52 @@ from jwt import exceptions as jwt_exceptions
 
 from django.conf import settings
 
-from arcana.api.client import Client
 from blueapps.utils.logger import logger
 from blueapps.utils.fancy_dict import FancyDict
-from iam.exceptions import AuthAPIError
 
 
 class JWTClient(object):
     def __init__(self, request):
         self.request = request
 
-        self.raw_content = request.COOKIES.get(
-            getattr(settings, "ARCANA_JWT_KEY", "ticket"), ""
+        self.raw_content = request.META.get(
+            getattr(settings, "APIGW_JWT_KEY", "HTTP_X_BKAPI_JWT"), ""
         )
-        if not self.raw_content:
-            self.raw_content = request.GET.get(
-                getattr(settings, "ARCANA_JWT_KEY", "ticket"), ""
-            )
-        self.arcana_host = settings.ARCANA_INNER_HOST
-        self._client = Client(self.raw_content, self.arcana_host)
-        self.request = request
-
         self.error_message = ""
         self.is_valid = False
+
         self.payload = {}
         self.headers = {}
         self.get_jwt_info()
-        self.user = self.get_user_info()
+
+        self.app = self.get_app_model()
+        self.user = self.get_user_model()
 
 
-    def get_user_info(self):
-        ok, message, data = self._client.permission_group()
-        if not ok:
-            raise AuthAPIError(message)
-        return FancyDict(data)
+    def get_app_model(self):
+        return FancyDict(self.payload.get("app", {}))
+
+    def get_user_model(self):
+        return FancyDict(self.payload.get("user", {}))
 
     def get_jwt_info(self):
         if not self.raw_content:
-            self.error_message = "JWT not in http content or it is empty, please called API through API Gateway"
+            self.error_message = "X_BKAPI_JWT not in http header or it is empty, please called API through API Gateway"
             return False
         try:
             self.headers = jwt.get_unverified_header(self.raw_content)
             self.payload = jwt.decode(
-                self.raw_content, verify=False, algorithms=['HS256']
+                self.raw_content, settings.APIGW_PUBLIC_KEY, issuer="APIGW"
             )
             self.is_valid = True
         except jwt_exceptions.InvalidKeyError:
-            self.error_message = "PUBLIC_KEY error"
+            self.error_message = "APIGW_PUBLIC_KEY error"
         except jwt_exceptions.DecodeError:
-            self.error_message = "Invalid JWT, wrong format or value"
+            self.error_message = "Invalid X_BKAPI_JWT, wrong format or value"
         except jwt_exceptions.ExpiredSignatureError:
-            self.error_message = "Invalid JWT, which is expired"
+            self.error_message = "Invalid X_BKAPI_JWT, which is expired"
         except jwt_exceptions.InvalidIssuerError:
-            self.error_message = "Invalid JWT, which is not from API Gateway"
+            self.error_message = "Invalid X_BKAPI_JWT, which is not from API Gateway"
         except Exception as error:
             self.error_message = error.message
 
