@@ -304,15 +304,17 @@ def custom_apigw_required(view_func):
         exempt = getattr(settings, "BK_APIGW_REQUIRE_EXEMPT", False)
         if exempt:
             return view_func(request, *args, **kwargs)
-
-        if not hasattr(request, "jwt"):
+        
+        # 修改为验证cookie中的token
+        if not request.COOKIES.get(
+            getattr(settings, "ARCANA_JWT_KEY", "ticket"), ""
+        ):
             logger.warning(
                 "can not found jwt in request, "
-                "make sure ApiGatewayJWTGenericMiddleware is config in middlewares or receive jwt is valid"
                 # noqa
             )
             return HttpResponse(
-                status=403, content="This API can only be accessed through API gateway"
+                status=403, content="This has no verify token"
             )
 
         return view_func(self, request, *args, **kwargs)
