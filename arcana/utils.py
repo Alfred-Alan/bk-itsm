@@ -26,12 +26,6 @@ class ArcanaRequest(object):
         self.request = request
         self.username = request.user.username
 
-    def user_group(self):
-        ok, message, data = self._client.permission_group()
-        if not ok:
-            raise AuthAPIError(message)
-        return ok, message, data
-
     def _permission_query(self):  # noqa
         """
         获取itsm权限
@@ -53,6 +47,26 @@ class ArcanaRequest(object):
                     })
 
         return actions
+
+    def fetch_users(self, kwargs):  # noqa
+        """
+        获取用户列表
+        """
+        ok, message, data = self._client.user_query(kwargs)
+        if not ok:
+            raise AuthAPIError(message)
+        user_list = []
+        for index, item in enumerate(data.get('rows', [])):
+            user_list.append({
+                "id": item.get('id', index),
+                "username": item.get('userName', ''),
+                'app_name': item.get('appName', ''),
+                'category_id': 1,  # 目录id
+                'category_name': '默认目录',  # 目录名称
+                'domain': 'default',  # 目录域
+                'logo': '',  # 用户头像
+            })
+        return user_list
 
     def _do_policy_query(self):
         action_policies = self._permission_query()

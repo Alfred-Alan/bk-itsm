@@ -74,6 +74,15 @@ class Client(object):
         ok, message, data = self._call_arcana_api(http_get, path, None)
         return ok, message, data
 
+    def user_query(self, form: {}):
+        """
+        获取用户列表
+        """
+        path = "/arcana-api/services/authentication/users"
+        ok, message, data = self._call_arcana_api(http_post, path, form)
+        return ok, message, data
+    
+
 
 if __name__ == '__main__':
     a = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzc29BdXRoIjoiIiwidG9rZW5JZCI6IiIsInVzZXJOYW1lIjoibGpxIiwiZXhwIjoxNjYwMDM0MDUwfQ.qtJ_u6yP1LdCwMqnoWCgs8Q1waBLhhcoQ5HgVvtGu94'

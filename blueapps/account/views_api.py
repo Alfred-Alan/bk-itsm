@@ -13,6 +13,7 @@ import json
 from django.utils.translation import ugettext as _
 from django.views.generic import View
 
+from arcana.utils import ArcanaRequest
 from blueapps.account.utils.basic import first_error_message
 from common.mixins.exempt import LoginExemptMixin, CsrfAndLoginExemptMixin
 from common.responses import ApiV1FailJsonResponse, ApiV1OKJsonResponse
@@ -62,13 +63,21 @@ class AllUsersView(LoginExemptMixin, View):
             # 获取用户信息
             data = User.objects.get_all_user(role)
         else:
+            # 改写对接arcana用户接口
+            arcana_client = ArcanaRequest(request)
             name__icontains = request.GET.get('name__icontains', '')
             exact_lookups = request.GET.get('exact_lookups', '')
             kwargs = {
-                "username__icontains": name__icontains,
-                "username__in":  exact_lookups.split(',') if exact_lookups else [],
+                "offset": 0,
+                "sortField": "",
+                "sortDirection": 0,
+                "keyword": name__icontains if name__icontains else "",
+                "group": ""
             }
-            data = User.objects.get_query_user(kwargs)
+            data = arcana_client.fetch_users(kwargs)
+            if exact_lookups:
+                user_names = exact_lookups.split(',') if exact_lookups else []
+                data = list(filter(lambda user: user['username'] in user_names, data))
         return ApiV1OKJsonResponse(_("用户信息获取成功"), data=data)
 
 
