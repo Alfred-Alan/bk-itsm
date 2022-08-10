@@ -98,27 +98,28 @@ class CustomNotifyViewSet(ModelViewSet):
     permission_classes = (CustomNotifyPermit,)
 
     filter_fields = {
+        "project_key": ["exact"],
         "notify_type": ["exact"],
         "used_by": ["exact"],
         "content_template": ["icontains", "contains"],
     }
 
-    def list(self, request, *args, **kwargs):
-        project_key = request.query_params.get(
-            "project_key", PUBLIC_PROJECT_PROJECT_KEY
-        )
-
-        queryset = self.filter_queryset(self.get_queryset()).filter(
-            project_key=project_key
-        )
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    # def list(self, request, *args, **kwargs):
+    #     project_key = request.query_params.get(
+    #         "project_key", PUBLIC_PROJECT_PROJECT_KEY
+    #     )
+    # 
+    #     queryset = self.filter_queryset(self.get_queryset()).filter(
+    #         project_key=project_key
+    #     )
+    # 
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
+    # 
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
 
     @action(detail=False, methods=["get"])
     def variable_list(self, request, *args, **kwargs):

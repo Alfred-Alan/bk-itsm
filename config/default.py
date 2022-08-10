@@ -24,6 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 import base64
 import importlib
+from urllib import parse
 from urllib.parse import urljoin
 
 from blueapps.conf.default_settings import *  # noqa
@@ -809,7 +810,7 @@ CALLBACK_AES_KEY = "APPROVAL_RESULT"
 # )
 
 # 适配arcana
-FRONTEND_URL = os.environ.get("BKAPP_FRONTEND_URL") or os.path.join(
+FRONTEND_URL = os.environ.get("BKAPP_FRONTEND_URL") or parse.urljoin(
     ARCANA_INNER_HOST, os.environ.get("BKAPP_ITSM_URL", "itsm/")
 )
 
