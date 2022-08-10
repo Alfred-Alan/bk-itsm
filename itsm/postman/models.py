@@ -253,6 +253,14 @@ class RemoteApi(ObjectManagerMixin, Model):
             raise DeleteError(_("内置系统不可删除"))
         super(RemoteApi, self).delete(*args, **kwargs)
 
+    def get_api_headers(self):
+        headers = {}
+        if self.req_headers:
+            for header in self.req_headers: # noqa
+                headers[header["name"]] = header.get("value", "")
+
+        return headers
+    
     def get_api_config(self, query_params=None, rsp_data=""):
         return {
             "system_code": self.remote_system.code,
@@ -265,6 +273,7 @@ class RemoteApi(ObjectManagerMixin, Model):
             "map_code": self.map_code,
             "before_req": self.before_req,
             "query_params": query_params or {},
+            "headers": self.get_api_headers(),
         }
 
     @classmethod
@@ -413,7 +422,8 @@ class RemoteApiInstance(Model):
             "rsp_data": self.rsp_data,
             "map_code": self.map_code,
             "before_req": self.before_req,
-            "query_params": self.req_body
+            "query_params": self.req_body,
+            "headers": self.remote_api.get_api_headers()
             if remote_api.method == "POST"
             else self.req_params,
         }

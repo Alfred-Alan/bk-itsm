@@ -379,6 +379,10 @@ export default {
             }
           }
           valueList[key].default = item;
+          // clear null required
+          if (!valueList[key].required.length) {
+            delete valueList[key].required;
+          }
           if (lastType === 'array') {
             Object.assign(insertObject, valueList[key]);
           }

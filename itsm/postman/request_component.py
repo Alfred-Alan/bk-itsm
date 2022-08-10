@@ -115,7 +115,6 @@ class OpenClient(object):
                 res = self.raw_post_request(url, data=data.get("raw", ""), **kwargs)
             else:
                 res = self.client.request("POST", url, data=data, **kwargs)
-                print(url, data, kwargs)
         else:
             res = self.client.request("GET", url, params=data, **kwargs)
 

@@ -44,7 +44,7 @@ from itsm.component.constants import (
     TRANSITION_OPERATE,
     NODE_FAILED,
 )
-from itsm.component.esb.backend_component import bk
+from itsm.postman.request_component import bk
 from itsm.component.utils.basic import list_by_separator
 from itsm.component.utils.conversion import (
     build_conditions_by_mako_template,
