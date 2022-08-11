@@ -50,12 +50,12 @@ def get_biz_choices():
     if app_list is not None:
         return app_list
 
-    apps = get_all_apps()
-    app_list = [
-        {"key": item["bk_biz_id"], "name": item["bk_biz_name"], "desc": _("请选择关联业务")}
-        for item in apps
-    ]
-
+    # apps = get_all_apps()
+    # app_list = [
+    #     {"key": item["bk_biz_id"], "name": item["bk_biz_name"], "desc": _("请选择关联业务")}
+    #     for item in apps
+    # ]
+    app_list = [{"key": 2, "name": "鼎茂", "desc": _("请选择关联业务")}]
     cache.set(cache_key, app_list, CACHE_30MIN)
     return app_list
 

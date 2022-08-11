@@ -31,13 +31,12 @@ class BkJwtLoginRequiredMiddleware(MiddlewareMixin):
         2. JWT签名正确
         """
         # # 框架前置中间件，已将识别的客户端信息填充进 request
-       # if not hasattr(request, "is_bk_jwt") or not request.is_bk_jwt():
+        # if not hasattr(request, "is_bk_jwt") or not request.is_bk_jwt():
         #     return None
         # 
         # 校验arcana jwt token，获取不到 token 退出
         if not hasattr(request, "is_ar_jwt") or not request.is_ar_jwt():
-            # auth_logout(request)
-            return None
+            auth_logout(request)
 
         logger.debug("当前请求是否经过JWT转发")
         login_exempt = getattr(view, "login_exempt", False)

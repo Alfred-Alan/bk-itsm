@@ -70,7 +70,8 @@ def get_all_users(users=None):
     return [
         {
             "id": user["bk_username"],
-            "name": '{}({})'.format(user['bk_username'], user['chname']),
+            # "name": '{}({})'.format(user['bk_username'], user['chname']),
+            "name": '{}'.format(user['bk_username']),
             "bk_username": user["bk_username"],
             "chname": user["chname"],
         }
