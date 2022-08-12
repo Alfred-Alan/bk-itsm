@@ -40,7 +40,7 @@ from itsm.component.constants import (
     LEN_MIDDLE,
     LEN_NORMAL,
     LEN_SHORT,
-    PUBLIC_PROJECT_PROJECT_KEY,
+    PUBLIC_PROJECT_PROJECT_KEY, LESSCODE_PROJECT_KEY,
 )
 from itsm.component.db import managers
 from itsm.component.fields import IOField
@@ -228,7 +228,7 @@ class CustomNotice(models.Model):
 
         for project_key in project_keys:
             # 公共项目不参与初始化通知模板
-            if project_key == PUBLIC_PROJECT_PROJECT_KEY:
+            if project_key == PUBLIC_PROJECT_PROJECT_KEY or project_key == LESSCODE_PROJECT_KEY:
                 continue
             cls.init_project_template(project_key=project_key)
 

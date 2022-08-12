@@ -5,7 +5,7 @@ const webpackBase = require('./webpack.base.conf')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 // 本地代理地址
-const HOST = '0.0.0.0'
+const HOST = 'localhost'
 const ORIGIN = `http://${HOST}`
 const SET_URL = ''
 const AJAX_URL_PREFIX = 'http://0.0.0.0:8000/'
