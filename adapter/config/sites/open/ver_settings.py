@@ -36,11 +36,11 @@ ESB_SDK_NAME = "blueking.component.open"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("BKAPP_DB_TEST"),
-        "USER": os.environ.get("BKAPP_MYSQL_USER"),
-        "PASSWORD": os.environ.get("BKAPP_MYSQL_PASS"),
-        "HOST": os.environ.get("BKAPP_MYSQL_IP"),
-        "PORT": os.environ.get("BKAPP_MYSQL_PORT"),
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USERNAME"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT"),
     },
 }
 

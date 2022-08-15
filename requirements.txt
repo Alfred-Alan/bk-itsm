@@ -127,3 +127,7 @@ apigw-manager[cryptography]==1.0.7
 
 drf-yasg==1.20.0
 blueapps==4.2.3
+
+# 打包上线依赖
+supervisor==4.2.2
+uwsgi==2.0.18

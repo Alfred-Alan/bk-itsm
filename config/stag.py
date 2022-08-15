@@ -60,11 +60,11 @@ DATABASES.update(
     {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.environ.get("BKAPP_DB_TEST"),
-            "USER": os.environ.get("BKAPP_MYSQL_USER"),
-            "PASSWORD": os.environ.get("BKAPP_MYSQL_PASS"),
-            "HOST": os.environ.get("BKAPP_MYSQL_IP"),
-            "PORT": os.environ.get("BKAPP_MYSQL_PORT"),
+            "NAME": os.environ.get("DB_NAME"),
+            "USER": os.environ.get("DB_USERNAME"),
+            "PASSWORD": os.environ.get("DB_PASSWORD"),
+            "HOST": os.environ.get("DB_HOST"),
+            "PORT": os.environ.get("DB_PORT"),
         },
     }
 )
@@ -79,7 +79,7 @@ if ALLOW_CSRF:
     MIDDLEWARE = ("common.middlewares.DisableCSRFCheck",) + MIDDLEWARE
 
 MEDIA_URL = "%smedia/" % SITE_URL
-CSRF_COOKIE_NAME = "bkitsm_csrftoken"
+CSRF_COOKIE_NAME = "itsm_csrftoken"
 
 # REMOTE_STATIC_URL = "http://127.0.0.1:8000/static/"
 # STATIC_URL = "http://127.0.0.1:8000/static/"
