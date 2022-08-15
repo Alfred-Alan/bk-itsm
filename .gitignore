@@ -13,7 +13,6 @@ django.pot
 *.sh
 
 frontend/pc/node_modules
-static/assets*
 venv
 USERRES
 rule_engine

@@ -1,0 +1,1 @@
+.all-ticket-page /deep/ .nav-tab .bk-tab-section{overflow-y:auto;height:calc(100vh - 146px)}.all-ticket-page /deep/ .nav-tab .bk-tab-section::-webkit-scrollbar{width:4px;height:4px;background-color:#fff}.all-ticket-page /deep/ .nav-tab .bk-tab-section::-webkit-scrollbar-thumb{height:2px;border-radius:2px;background-color:#a5a5a5}
