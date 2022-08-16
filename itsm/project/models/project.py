@@ -122,8 +122,10 @@ class Project(Model):
     def init_project_sla(self):
         schedules = Schedule.init_schedule(project_key=self.key)
         sla_list = Sla.init_sla(schedules, project_key=self.key)
-        self.grant_instance_permit(schedules)
-        self.grant_instance_permit(sla_list)
+        
+        # 授予实例创建者相关的操作
+        # self.grant_instance_permit(schedules)
+        # self.grant_instance_permit(sla_list)
 
     def init_custom_notify_template(self):
         from itsm.sla.models import CustomNotice

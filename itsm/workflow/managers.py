@@ -1541,17 +1541,21 @@ class TemplateFieldManager(Manager):
             if self.filter(key=f[4]).exists():
                 # 防止重复创建覆盖已有的内容
                 instance = self.filter(key=f[4]).first()
-                if f[4] == "bk_biz_id":
-                    if instance.api_instance_id == 0:
-                        api_instance = RemoteApiInstance.create_default_api_instance(
-                            func_name="search_business",
-                            req_params={},
-                            req_body={"fields": ["bk_biz_id", "bk_biz_name"]},
-                            rsp_data="data.info",
-                        )
-                        instance.api_instance_id = api_instance.id
-                    instance.kv_relation = {"name": "bk_biz_name", "key": "bk_biz_id"}
-                    instance.save()
+                
+                # 关闭创建蓝鲸API实例
+                # if f[4] == "bk_biz_id":
+                #     print(f)
+                #     if instance.api_instance_id == 0:
+                #         api_instance = RemoteApiInstance.create_default_api_instance(
+                #             func_name="search_business",
+                #             req_params={},
+                #             req_body={"fields": ["bk_biz_id", "bk_biz_name"]},
+                #             rsp_data="data.info",
+                #         )
+                #         instance.api_instance_id = api_instance.id
+                #     instance.kv_relation = {"name": "bk_biz_name", "key": "bk_biz_id"}
+                #     instance.save()
+
                 instance.project_key = PUBLIC_PROJECT_PROJECT_KEY
                 instance.save()
                 continue
