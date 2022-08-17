@@ -48,7 +48,8 @@ def init_notify_type_choice():
     """获取ESB接入通知类型"""
     try:
         # result = client_backend.cmsi.get_msg_type()
-        result = [{'is_active': True, 'label': '邮件', 'type': 'mail', 'icon': ''},
+        result = [{'is_active': True, 'label': '企业微信', 'type': 'weixin', 'icon': ''},
+                  {'is_active': True, 'label': '邮件', 'type': 'mail', 'icon': ''},
                   {'is_active': True, 'label': '短信', 'type': 'sms', 'icon': ''}]
         notify_type_choice = [
             (NOTIFY_TYPE_MAPPING.get(ins["type"], ins["type"].upper()), ins["label"])
