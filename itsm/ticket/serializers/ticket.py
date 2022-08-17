@@ -34,6 +34,7 @@ from django.utils.translation import ugettext as _
 from rest_framework import serializers
 from rest_framework.fields import JSONField, empty
 
+from arcana.utils import ArcanaRequest
 from common.log import logger
 from itsm.auth_iam.utils import IamRequest
 from itsm.component.drf.serializers import AuthModelSerializer
@@ -902,7 +903,6 @@ class TicketSerializer(AuthModelSerializer):
 
     def update_auth_actions(self, instance, data):
         request = self.context["request"]
-        iam_client = IamRequest(request)
         resource_info = {
             "resource_id": str(instance.service_id),
             "resource_name": instance.service_name,
@@ -910,9 +910,15 @@ class TicketSerializer(AuthModelSerializer):
         }
 
         apply_actions = ["ticket_management"]
-        auth_actions = iam_client.resource_multi_actions_allowed(
-            apply_actions, [resource_info], project_key=instance.project_key
-        )
+
+        # iam_client = IamRequest(request)
+        # auth_actions = iam_client.resource_multi_actions_allowed(
+        #     apply_actions, [resource_info], project_key=instance.project_key
+        # )
+
+        # 替换原有权限验证逻辑
+        arcana_client = ArcanaRequest(request)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
 
         data["auth_actions"] = []
         if auth_actions.get("ticket_management"):

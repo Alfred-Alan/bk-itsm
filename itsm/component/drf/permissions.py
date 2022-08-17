@@ -199,12 +199,15 @@ class IamAuthPermit(permissions.BasePermission):
                 "creator": project.creator,
             }
         )
-        iam_client = IamRequest(request)
-        auth_actions = iam_client.batch_resource_multi_actions_allowed(
-            set(apply_actions), resources
-        )
-        auth_actions = auth_actions.get(resources[0]["resource_id"], {})
+        # iam_client = IamRequest(request)
+        # auth_actions = iam_client.batch_resource_multi_actions_allowed(
+        #     set(apply_actions), resources
+        # )
+        # auth_actions = auth_actions.get(resources[0]["resource_id"], {})
 
+        # 替换原有权限验证逻辑 
+        arcana_client = ArcanaRequest(request)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
         if self.auth_result(auth_actions, apply_actions):
             return True
 
@@ -299,11 +302,16 @@ class IamAuthProjectViewPermit(IamAuthPermit):
                 "creator": project.creator,
             }
         )
-        iam_client = IamRequest(request)
-        auth_actions = iam_client.batch_resource_multi_actions_allowed(
-            set(apply_actions), resources
-        )
-        auth_actions = auth_actions.get(resources[0]["resource_id"], {})
+        
+        # iam_client = IamRequest(request)
+        # auth_actions = iam_client.batch_resource_multi_actions_allowed(
+        #     set(apply_actions), resources
+        # )
+        # auth_actions = auth_actions.get(resources[0]["resource_id"], {})
+
+        # 替换原有权限验证逻辑
+        arcana_client = ArcanaRequest(request)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
 
         if self.auth_result(auth_actions, apply_actions):
             return True

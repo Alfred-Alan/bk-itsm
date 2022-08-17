@@ -29,6 +29,7 @@ import re
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
+from arcana.utils import ArcanaRequest
 from itsm.auth_iam.utils import IamRequest
 from itsm.component.constants import CATALOG, FIRST_ORDER
 from itsm.project.models import Project, ProjectSettings, CostomTab
@@ -80,8 +81,6 @@ class ProjectSerializer(ModelSerializer):
         # 默认项目信息
         request = self.context["request"]
 
-        iam_client = IamRequest(request)
-
         project_info = {
             "resource_id": instance.key,
             "resource_name": instance.name,
@@ -90,9 +89,15 @@ class ProjectSerializer(ModelSerializer):
         }
         apply_actions = self.Meta.model.resource_operations
         # 用户action鉴权
-        auth_actions = iam_client.batch_resource_multi_actions_allowed(
-            apply_actions, [project_info], project_key=instance.key
-        ).get(instance.key, {})
+
+        # iam_client = IamRequest(request)
+        # auth_actions = iam_client.batch_resource_multi_actions_allowed(
+        #     apply_actions, [project_info], project_key=instance.key
+        # ).get(instance.key, {})
+ 
+        # 替换原有权限验证逻辑
+        arcana_client = ArcanaRequest(request)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
         auth_actions = [
             action_id for action_id, result in auth_actions.items() if result
         ]

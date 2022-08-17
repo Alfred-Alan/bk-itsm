@@ -35,6 +35,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.deprecation import MiddlewareMixin
 from pyinstrument import Profiler
 
+from arcana.utils import ArcanaRequest
 from common.log import logger
 from common.mymako import render_mako_context
 from itsm.component.constants import EXEMPT_HTTPS_REDIRECT
@@ -241,8 +242,12 @@ class WikiIamAuthMiddleware(MiddlewareMixin):
         """process_view."""
         if request.user.username and "/wiki/" in request.path:
             apply_actions = ["knowledge_manage"]
-            iam_client = IamRequest(request)
-            auth_actions = iam_client.resource_multi_actions_allowed(apply_actions, [])
+            # iam_client = IamRequest(request)
+            # auth_actions = iam_client.resource_multi_actions_allowed(apply_actions, [])
+            # 替换原有权限验证逻辑
+            arcana_client = ArcanaRequest(request)
+            auth_actions = arcana_client.multi_actions_allowed(apply_actions)
+            
             request.user.set_property(
                 "is_wiki_superuser", 1 if auth_actions.get("knowledge_manage") else 0
             )

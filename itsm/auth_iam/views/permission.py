@@ -47,9 +47,14 @@ class PermissionViewSet(ApiGenericMixin, ViewSet):
 
     @action(detail=False, methods=["get"])
     def query_system_verify_perms(self, request):
-        iam_client = IamRequest(request)
         verify_actions = ['project_create', "operational_data_view"]
-        auth_actions = iam_client.resource_multi_actions_allowed(verify_actions, [])
+
+        # iam_client = IamRequest(request)
+        # auth_actions = iam_client.resource_multi_actions_allowed(verify_actions, [])
+
+        # 替换原有权限验证逻辑
+        arcana_client = ArcanaRequest(request)
+        auth_actions = arcana_client.multi_actions_allowed(verify_actions)
 
         return Response(auth_actions)
 

@@ -63,7 +63,7 @@ __all__ = [
 # SaaS运行版本，如非必要请勿修改
 RUN_VER = "open"
 # SaaS应用ID
-APP_ID = os.environ.get("BKPAAS_APP_ID", "bk_itsm")
+APP_ID = os.environ.get("BKPAAS_APP_ID", "itsm")
 # SaaS安全密钥，注意请勿泄露该密钥
 APP_TOKEN = os.environ.get("BKPAAS_APP_SECRET", "764b812b-727b-4db8-9c46-a34ad5bd9278")
 # 蓝鲸SaaS平台URL，例如 http://paas.bking.com

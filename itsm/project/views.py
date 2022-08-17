@@ -31,6 +31,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
+from arcana.utils import ArcanaRequest
 from itsm.component.constants import LESSCODE_PROJECT_KEY
 from itsm.component.drf import viewsets as component_viewsets
 from itsm.component.constants.iam import ACTIONS
@@ -88,7 +89,6 @@ class ProjectViewSet(component_viewsets.AuthModelViewSet):
     @action(detail=True, methods=["get"])
     def info(self, request, *args, **kwargs):
         """查询用户依赖当前项目的权限"""
-        iam_client = IamRequest(request)
         apply_actions = []
 
         project_instance = self.get_object()
@@ -104,10 +104,14 @@ class ProjectViewSet(component_viewsets.AuthModelViewSet):
             if "project" in action_info["relate_resources"]:
                 apply_actions.append(action_info["id"])
 
-        auth_actions = iam_client.batch_resource_multi_actions_allowed(
-            apply_actions, [project_info]
-        ).get("0", {})
-
+        # iam_client = IamRequest(request)
+        # auth_actions = iam_client.batch_resource_multi_actions_allowed(
+        #     apply_actions, [project_info]
+        # ).get("0", {})
+        
+        # 替换原有权限验证逻辑
+        arcana_client = ArcanaRequest(request)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
         auth_actions = [
             action_id for action_id, result in auth_actions.items() if result
         ]

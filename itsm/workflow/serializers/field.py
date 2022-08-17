@@ -31,6 +31,7 @@ from rest_framework import serializers
 from rest_framework.fields import JSONField, empty
 from rest_framework.validators import UniqueValidator
 
+from arcana.utils import ArcanaRequest
 from itsm.auth_iam.utils import IamRequest
 from itsm.component.drf.serializers import AuthModelSerializer
 from itsm.component.constants import (
@@ -289,8 +290,6 @@ class TemplateFieldSerializer(AuthModelSerializer):
         # 默认项目信息
         request = self.context["request"]
 
-        iam_client = IamRequest(request)
-
         filed_info = {
             "resource_id": instance.id,
             "resource_name": instance.name,
@@ -298,9 +297,15 @@ class TemplateFieldSerializer(AuthModelSerializer):
             "resource_type_name": "公共字段",
         }
         apply_actions = self.Meta.model.public_field_resource_operations
-        auth_actions = iam_client.batch_resource_multi_actions_allowed(
-            apply_actions, [filed_info]
-        ).get(str(instance.id), {})
+
+        # iam_client = IamRequest(request)
+        # auth_actions = iam_client.batch_resource_multi_actions_allowed(
+        #     apply_actions, [filed_info]
+        # ).get(str(instance.id), {})
+
+        # 替换原有权限验证逻辑
+        arcana_client = ArcanaRequest(request)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
         auth_actions = [
             action_id for action_id, result in auth_actions.items() if result
         ]

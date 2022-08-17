@@ -28,6 +28,7 @@ from django.conf import settings
 from rest_framework import permissions
 from rest_framework.serializers import ValidationError
 
+from arcana.utils import ArcanaRequest
 from iam import Action, Resource, Subject
 from iam.exceptions import AuthFailedException
 from itsm.auth_iam.utils import IamRequest
@@ -147,7 +148,6 @@ class TicketPermissionValidate(permissions.BasePermission):
         if settings.ENVIRONMENT == "dev":
             return True
 
-        iam_client = IamRequest(request)
         resource_info = {
             "resource_id": str(obj.service_id),
             "resource_name": obj.service_name,
@@ -155,9 +155,15 @@ class TicketPermissionValidate(permissions.BasePermission):
         }
 
         apply_actions = ["ticket_management"]
-        auth_actions = iam_client.resource_multi_actions_allowed(
-            apply_actions, [resource_info], project_key=obj.project_key
-        )
+
+        # iam_client = IamRequest(request)
+        # auth_actions = iam_client.resource_multi_actions_allowed(
+        #     apply_actions, [resource_info], project_key=obj.project_key
+        # )
+
+        # 替换原有权限验证逻辑
+        arcana_client = ArcanaRequest(request)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
 
         if auth_actions.get("ticket_management"):
             return True
@@ -165,7 +171,6 @@ class TicketPermissionValidate(permissions.BasePermission):
         return False
 
     def iam_ticket_view_auth(self, request, obj):
-        iam_client = IamRequest(request)
         project_name = Project.objects.get(key=obj.project_key).name
         resource_info = {
             "resource_id": str(obj.service_id),
@@ -174,9 +179,16 @@ class TicketPermissionValidate(permissions.BasePermission):
         }
 
         apply_actions = ["ticket_view"]
-        auth_actions = iam_client.resource_multi_actions_allowed(
-            apply_actions, [resource_info], project_key=obj.project_key
-        )
+
+        # iam_client = IamRequest(request)
+        # auth_actions = iam_client.resource_multi_actions_allowed(
+        #     apply_actions, [resource_info], project_key=obj.project_key
+        # )
+        
+        # 替换原有权限验证逻辑
+        arcana_client = ArcanaRequest(request)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
+
         if auth_actions.get("ticket_view"):
             return True
 
