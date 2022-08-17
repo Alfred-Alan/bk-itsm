@@ -1,6 +1,12 @@
 #!/bin/bash
 
-python manage.py collectstatic --noinput >> /data/app/logs/itsm/collectstatic.log \
-&& python manage.py migrate --no-input >> /data/app/logs/itsm/migrate.log \
-&& python manage.py createcachetable django_cache >> /data/app/logs/itsm/migrate.log \
+# 当前脚本目录
+SCRIPT_DIR=$(dirname $(readlink -f "$0"))
+
+cat << EOF
+SCRIPT_DIR -> "$SCRIPT_DIR"
+EOF
+
+${SCRIPT_DIR}/migrate.sh >> /data/app/logs/itsm/migrate.log \
+&& python manage.py collectstatic --noinput >> /data/app/logs/itsm/collectstatic.log \
 && /usr/local/bin/supervisord -n -c /data/app/conf/supervisord.conf
