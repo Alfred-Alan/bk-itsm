@@ -77,4 +77,5 @@ handler401 = "error_pages.views.error_401"
 urlpatterns += [
     # wiki上传图片404也可以这样简单解决：路由层面不复用MEDIA_URL，后者只用来生成url，比如可以自定义prefix为SITE_URL
     url(r"^media/(?P<path>.*)$", static.serve, {"document_root": settings.MEDIA_ROOT}),
+    url(r'^static/(?P<path>.*)$', static.serve, {'document_root': settings.STATIC_ROOT}),
 ]

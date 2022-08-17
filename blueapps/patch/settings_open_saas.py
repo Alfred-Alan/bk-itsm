@@ -110,7 +110,7 @@ if is_open_saas_v2():  # V2
 
     # STATIC_ROOT,静态文件收集文件夹,由于企业版需要用户手动收集,此处设为空,
     # 同时需要设置STATICFILES_DIRS不改变
-    STATIC_ROOT = None
+    STATIC_ROOT = os.path.join(PROJECT_ROOT, "staticfiles")
 
     # saas访问统计js 路径
     REMOTE_ANALYSIS_URL = "%s/console/static/js/analysis.min.js" % BK_PAAS_HOST
