@@ -29,7 +29,7 @@ const axiosInstance = axios.create({
     'X-REQUESTED-WITH': 'XMLHttpRequest'
   },
   xsrfHeaderName: 'X-CSRFTOKEN',
-  xsrfCookieName: 'bkitsm_csrftoken',
+  xsrfCookieName: 'itsm_csrftoken',
   baseURL: `${(window as any).SITE_URL}weixin/api/`
   // baseURL: 'https://www.fastmock.site/mock/bc91484926ba3302b89b1be19ea66e77/724mock'
 })

@@ -52,7 +52,7 @@ LANGUAGE_COOKIE_NAME = "blueking_language"
 IS_DISPLAY_LANGUAGE_CHANGE = "none"
 
 # CSRF Config
-CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_NAME = "itsm_csrftoken"
 
 IS_OPEN_V3 = os.getenv("BKPAAS_MAJOR_VERSION", False)
 
