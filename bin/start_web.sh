@@ -7,6 +7,6 @@ cat << EOF
 SCRIPT_DIR -> "$SCRIPT_DIR"
 EOF
 
-${SCRIPT_DIR}/migrate.sh >> /data/app/logs/itsm/migrate.log \
+sh ${SCRIPT_DIR}/migrate.sh >> /data/app/logs/itsm/migrate.log \
 && python manage.py collectstatic --noinput >> /data/app/logs/itsm/collectstatic.log \
 && /usr/local/bin/supervisord -n -c /data/app/conf/supervisord.conf
