@@ -25,10 +25,12 @@ from django.contrib.auth import (logout as auth_logout)
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.utils.translation import ugettext_lazy as _
+from django.core.cache import cache
 
 from arcana.utils import ArcanaRequest
 from blueapps.account import get_user_model
 from blueapps.utils.jwt_client import JWTClient
+from itsm.component.constants import PREFIX_KEY
 
 logger = logging.getLogger("component")  # pylint: disable=invalid-name
 
@@ -61,6 +63,18 @@ class BkJwtBackend(ModelBackend):
         except Exception as err:  # pylint: disable=broad-except
             logger.exception(u"自动创建 & 更新 User Model 失败: %s" % err)
             return None
+
+        # token 写入缓存
+        exp = verify_data["data"].get("payload", {}).get("exp", 0)
+        if not exp:
+            return None
+
+        cache_key = "{}{}_ticket".format(PREFIX_KEY, user.username)
+        ticket = cache.get(cache_key)
+        if ticket is None:
+            expire_seconds = int(int(exp) - int(time.time()))
+            cache.set(cache_key, verify_data["data"].get("payload", {}).get("ticket", ''), 
+                      expire_seconds)
 
         return user
 

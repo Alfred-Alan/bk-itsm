@@ -62,6 +62,8 @@ class JWTClient(object):
             self.payload = jwt.decode(
                 self.raw_content, verify=False, algorithms=['HS256']
             )
+            self.payload.update(ticket=self.raw_content)
+
             self.is_valid = True
         except jwt_exceptions.InvalidKeyError:
             self.error_message = "PUBLIC_KEY error"

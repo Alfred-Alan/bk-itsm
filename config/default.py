@@ -801,7 +801,7 @@ BK_IAM_ESB_PAAS_HOST = os.environ.get("BK_IAM_ESB_PAAS_HOST", IAM_ESB_PAAS_HOST)
 
 IAM_INITIAL_FILE = os.environ.get("BKAPP_IAM_INITIAL_FILE", "")
 
-DEFAULT_SYS_FILE_PATH = os.environ.get("DEFAULT_SYS_FILE_PATH", "/data/itsm")
+DEFAULT_SYS_FILE_PATH = os.environ.get("DEFAULT_SYS_FILE_PATH", "/data/app/data")
 
 CALLBACK_AES_KEY = "APPROVAL_RESULT"
 

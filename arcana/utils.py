@@ -6,7 +6,7 @@ from django.core.cache import cache
 from common.log import logger
 from arcana.api.client import Client, logger
 from iam.exceptions import AuthAPIError
-from itsm.component.constants import CACHE_30MIN
+from itsm.component.constants import CACHE_30MIN, PREFIX_KEY
 
 
 class ArcanaRequest(object):
@@ -14,17 +14,22 @@ class ArcanaRequest(object):
     input: object
     """
 
-    def __init__(self, request):
-
-        if request.GET.get("ticket", ""):
-            self.token = request.GET.get("ticket", "")
-        else:
-            self.token = request.COOKIES.get("ticket", "")
+    def __init__(self, request=None, username=None):
+        # 使用用户名取缓存token
+        if username:
+            cache_key = "{}{}_ticket".format(PREFIX_KEY, username)
+            self.token = cache.get(cache_key)
+            self.username = username
+        else:        
+            if request.GET.get("ticket", ""):
+                self.token = request.GET.get("ticket", "")
+            else:
+                self.token = request.COOKIES.get("ticket", "")
+            self.username = request.user.username
 
         self.arcana_host = settings.ARCANA_INNER_HOST
         self._client = Client(self.token, self.arcana_host)
         self.request = request
-        self.username = request.user.username
 
     def _permission_query(self):  # noqa
         """

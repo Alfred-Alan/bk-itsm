@@ -233,7 +233,6 @@
       getNoticeList(isSearch) {
         this.isDataLoading = true;
         const params = {
-          project_key: this.$route.query.project_id,
           notify_type: this.acticeTab,
         };
         if (isSearch) params.content_template__icontains = this.searchNotice;

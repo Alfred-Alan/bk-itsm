@@ -42,8 +42,8 @@ def app_ready_handler(sender, **kwargs):
     
     print("update notify type")
     Notify.init_builtin_notify()
-    print("update notify template")
-    CustomNotice.init_default_template()
+    # print("update notify template")
+    # CustomNotice.init_default_template()
     print("update notify system_settings")
     SystemSettings.init_default_settings()
     # 关闭蓝鲸接口

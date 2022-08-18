@@ -40,6 +40,7 @@ from django.db.models import Q, Count
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
+from arcana.utils import ArcanaRequest
 from common.log import logger
 from common.cipher import AESVerification
 from common.redis import Cache
@@ -2105,7 +2106,6 @@ class Ticket(Model, BaseTicket):
         if settings.ENVIRONMENT == "dev":
             return True
 
-        iam_client = IamRequest(username=username)
         resource_info = {
             "resource_id": str(self.service_id),
             "resource_name": self.service_name,
@@ -2113,9 +2113,16 @@ class Ticket(Model, BaseTicket):
         }
 
         apply_actions = ["ticket_management"]
-        auth_actions = iam_client.resource_multi_actions_allowed(
-            apply_actions, [resource_info], project_key=self.project_key
-        )
+
+        # iam_client = IamRequest(username=username)
+        # auth_actions = iam_client.resource_multi_actions_allowed(
+        #     apply_actions, [resource_info], project_key=self.project_key
+        # )
+
+        # 替换原有权限验证逻辑 
+        arcana_client = ArcanaRequest(username=username)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
+        
         if auth_actions.get("ticket_management"):
             return True
 

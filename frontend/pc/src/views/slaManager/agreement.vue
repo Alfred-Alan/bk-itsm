@@ -371,7 +371,6 @@
         this.isDataLoading = true;
         const checkIdL = checkId.toLowerCase();
         const params = {
-          project_key: this.$route.query.project_id,
           notify_type: checkId,
           used_by: 'SLA',
         };

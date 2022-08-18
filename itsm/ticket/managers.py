@@ -38,6 +38,7 @@ from django.db.models import F, Q, QuerySet, AutoField
 from django.forms import model_to_dict
 from django.utils.translation import ugettext as _
 
+from arcana.utils import ArcanaRequest
 from common.log import logger
 from itsm.component.constants import (
     CUSTOM_ACTION_OPERATE,
@@ -275,7 +276,6 @@ class TicketManager(Manager):
         )
 
     def get_iam_auth_tickets(self, queryset, username):
-        iam_client = IamRequest(username=username)
         service_ids = set(queryset.values_list("service_id", flat=True).distinct())
 
         resources = [
@@ -284,9 +284,16 @@ class TicketManager(Manager):
         ]
 
         apply_actions = ["ticket_view"]
-        auth_actions = iam_client.batch_resource_multi_actions_allowed(
-            apply_actions, resources
-        )
+ 
+        # iam_client = IamRequest(username=username)
+        # auth_actions = iam_client.batch_resource_multi_actions_allowed(
+        #     apply_actions, resources
+        # )
+
+        # 替换原有权限验证逻辑 
+        arcana_client = ArcanaRequest(username=username)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
+        
         return queryset.filter(
             service_id__in=[
                 service_id

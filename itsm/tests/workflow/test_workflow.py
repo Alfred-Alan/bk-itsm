@@ -36,6 +36,7 @@ import copy
 
 from django.test import TestCase, override_settings
 
+from arcana.utils import ArcanaRequest
 from itsm.auth_iam.utils import IamRequest
 from itsm.component.utils.misc import JsonEncoder
 from itsm.workflow.models import State, Transition, Workflow
@@ -122,8 +123,13 @@ class WorkflowTest(TestCase):
 
     @staticmethod
     def auth_result(username, apply_actions, resource_info):
-        iam_client = IamRequest(username=username)
-        auth_actions = iam_client.resource_multi_actions_allowed(apply_actions, [resource_info])
+        # iam_client = IamRequest(username=username)
+        # auth_actions = iam_client.resource_multi_actions_allowed(apply_actions, [resource_info])
+        
+        # 替换原有权限验证逻辑 
+        arcana_client = ArcanaRequest(username=username)
+        auth_actions = arcana_client.multi_actions_allowed(apply_actions)
+
         denied_actions = []
         for action, result in auth_actions.items():
             if action in apply_actions and result is False:

@@ -40,6 +40,7 @@ from django.db.models import Model
 from rest_framework import serializers
 from rest_framework.fields import empty
 
+from arcana.utils import ArcanaRequest
 from common.log import logger
 from itsm.auth_iam.utils import IamRequest
 from itsm.component.constants import DEFAULT_PROJECT_PROJECT_KEY
@@ -84,10 +85,16 @@ class AuthModelSerializer(serializers.ModelSerializer):
                   "creator": item.get("creator")}
             for item in instance_list
         ]
-        iam_client = IamRequest(self.context.get('request'))
+
         try:
-            return iam_client.batch_resource_multi_actions_allowed(
-                self.Meta.model.resource_operations, resources, project_key=project_key)
+            # iam_client = IamRequest(self.context.get('request'))
+            # return iam_client.batch_resource_multi_actions_allowed(
+            #     self.Meta.model.resource_operations, resources, project_key=project_key)
+
+            # 替换原有权限验证逻辑
+            arcana_client = ArcanaRequest(self.context.get('request'))
+            print("get_resource_permission", arcana_client.multi_actions_allowed(self.Meta.model.resource_operations))
+            return arcana_client.multi_actions_allowed(self.Meta.model.resource_operations)
         except BaseException:
             logger.exception("get auth permission error, resource is %s" % resource_type)
             return []
@@ -102,7 +109,8 @@ class AuthModelSerializer(serializers.ModelSerializer):
         """
         if instance is not None:
             resource_id = str(instance.id if isinstance(instance, Model) else instance['id'])
-            instance_permissions = self.resource_permissions.get(resource_id, {})
+            # instance_permissions = self.resource_permissions.get(resource_id, {})
+            instance_permissions = self.resource_permissions
             data.update(
                 auth_actions=[action for action, result in instance_permissions.items() if result])
         return data
