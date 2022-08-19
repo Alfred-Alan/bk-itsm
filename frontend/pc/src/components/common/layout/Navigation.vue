@@ -299,6 +299,28 @@
       });
     },
     methods: {
+      // 设置cookie
+      setCookie(name, value, exdays) {
+        const date = new Date();
+        date.setTime(date.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        const expires = `expires=${date.toUTCString()}`;
+        document.cookie = `${name}=${value}; ${expires}; path=/`; // path=/是根路径
+      },
+      // 获取cookie
+      getCookie(cname) {
+        const name = `${cname}=`;
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) === ' ') c = c.substring(1);
+          if (c.indexOf(name) !== -1) return c.substring(name.length, c.length);
+        }
+        return '';
+      },
+      // 清除cookie
+      delCookie(name) {
+        this.setCookie(name, '', -1);
+      },
       async getProjectList() {
         try {
           this.editDialogFormDisable = true;
@@ -444,6 +466,7 @@
         // location.href = `${window.location.protocol}//${window.location.host}${window.login_url}?c_url=${window.location.href}`;
 
         // Arcana logout
+        this.delCookie('ticket');
         location.href = `${window.location.protocol}//${window.location.host}${window.login_url}`;
       },
       // 切换项目
