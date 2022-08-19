@@ -93,7 +93,6 @@ class AuthModelSerializer(serializers.ModelSerializer):
 
             # 替换原有权限验证逻辑
             arcana_client = ArcanaRequest(self.context.get('request'))
-            print("get_resource_permission", arcana_client.multi_actions_allowed(self.Meta.model.resource_operations))
             return arcana_client.multi_actions_allowed(self.Meta.model.resource_operations)
         except BaseException:
             logger.exception("get auth permission error, resource is %s" % resource_type)

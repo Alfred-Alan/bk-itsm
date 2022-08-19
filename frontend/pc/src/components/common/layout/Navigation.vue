@@ -441,7 +441,10 @@
       },
       onLogOut() {
         this.$store.dispatch('user/logOut');
-        location.href = `${window.location.protocol}//${window.location.host}${window.login_url}?c_url=${window.location.href}`;
+        // location.href = `${window.location.protocol}//${window.location.host}${window.login_url}?c_url=${window.location.href}`;
+
+        // Arcana logout
+        location.href = `${window.location.protocol}//${window.location.host}${window.login_url}`;
       },
       // 切换项目
       onSelectProject(val) {
