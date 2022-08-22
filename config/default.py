@@ -107,7 +107,8 @@ INSTALLED_APPS += (
     "itsm.monitor",
     "blueapps.opentelemetry.instrument_app",
     "itsm.plugin_service",
-    'arcana'
+    "arcana",
+    "bulk_update_or_create",
 )
 
 INSTALLED_APPS = ("itsm.helper",) + INSTALLED_APPS

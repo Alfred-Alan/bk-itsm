@@ -35,25 +35,6 @@ from itsm.component.exceptions import ComponentCallError
 
 adapter_api = settings.ADAPTER_API
 
-# @task
-# def update_user_cache(cache_key, ret_type="list", name_type="bk_username", users=None):
-#     """更新用户缓存"""
-#     bk_users = None
-#     try:
-#         res = adapter_api.get_all_users(users)
-#     except ComponentCallError:
-#         res = []
-# 
-#     if ret_type == "dict" and name_type == "bk_username":
-#         bk_users = {user["bk_username"]: user["name"] for user in res}
-#     if ret_type == "dict" and name_type == "chname":
-#         bk_users = {user["bk_username"]: user["chname"] for user in res}
-#     if ret_type == "list":
-#         bk_users = [user[name_type] for user in res]
-#     if bk_users:
-#         cache.set(cache_key, bk_users, CACHE_10MIN)
-#     return bk_users
-           
 @task
 def update_user_cache(cache_key, ret_type="list", name_type="bk_username", users=None):
     """更新用户缓存"""

@@ -14,10 +14,12 @@ specific language governing permissions and limitations under the License.
 from __future__ import unicode_literals
 
 import datetime
+import hashlib
 import logging
 import random
 import traceback
 
+from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -25,15 +27,18 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.core import validators
-from django.db import models
+from django.core.cache import cache
+from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from django.utils.http import urlquote
+from arcana.utils import ArcanaRequest
 from blueapps.account.manager import (BkUserManager, LoginLogManager)
 from blueapps.account.constants import (ROLECODE_CHOICES, RoleCodeEnum, LANGUAGE_CHOICES,
                                         TIME_ZONE_CHOICES)
 from blueapps.account import conf
+from itsm.component.constants import PREFIX_KEY, CACHE_10MIN
 
 ConfFixture = conf.ConfFixture
 
@@ -75,6 +80,7 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, username, password=None, **extra_fields):
         return self._create_user(username, True, True, password, **extra_fields)
+
 
 class BkRole(models.Model):
     """
@@ -126,6 +132,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     objects = BkUserManager()
+    bulk_objects = BulkUpdateOrCreateQuerySet.as_manager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
@@ -197,6 +204,35 @@ class User(AbstractBaseUser, PermissionsMixin):
     @avatar_url.setter
     def avatar_url(self, a_url):
         self.set_property("avatar_url", a_url)
+
+    @classmethod
+    def update_arcana_users(cls, request):
+        arcana_client = ArcanaRequest(request)
+        users = arcana_client.fetch_users({
+            "offset": 0,
+            "sortField": "",
+            "sortDirection": 0,
+            "keyword": "",
+            "group": ""
+        })
+        usernames = [user['username'] for user in users]
+        user_md5 = hashlib.md5(str(usernames).encode()).hexdigest()
+        cache_key = "{}usernames_{}".format(PREFIX_KEY, user_md5)
+        ac_users = cache.get(cache_key)
+        if ac_users:
+            return None
+
+        # 取不到代表有新增用户
+        try:
+            with transaction.atomic():
+                users = [cls(username=user['username'], nickname=user['username']) for user in
+                         users]
+                cls.bulk_objects.bulk_update_or_create(users, ['username', 'nickname'],
+                                                       match_field='username')
+                cache.set(cache_key, usernames, CACHE_10MIN)
+        except Exception as err:
+            logger.exception(u"自动创建 & 更新 User Model 失败: %s" % err)
+            return None
 
 
 class BkUserRole(models.Model):

@@ -25,6 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import datetime
 
+from blueapps.account import get_user_model
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -57,6 +58,11 @@ def index(request):
     # UserRole.update_cmdb_common_roles()
     # # 更新用户在各个系统的角色缓存
     # BKUserRole.get_or_update_user_roles(request.user.username)
+    
+    # 更新arcana用户
+    user_model = get_user_model()
+    user_model.update_arcana_users(request)
+    
     try:
         DEFAULT_PROJECT = UserProjectAccessRecord.objects.get(
             username=request.user.username
