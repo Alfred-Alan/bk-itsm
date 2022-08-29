@@ -12,6 +12,7 @@ RUN python3.6 -m pip install -r /data/app/code/requirements.txt -i http://mirror
 
 ENV BK_ENV=production \
     C_FORCE_ROOT=true \
+    ARCANA_INNER_HOST=http://192.168.100.244:7088 \
     BK_LOG_DIR=/data/app/logs/ \
     BK_BROKER_URL=amqp://xxxx:xxxx@0.0.0.0:5672/prod_itsm \
     BKAPP_REDIS_HOST=0.0.0.0 \
