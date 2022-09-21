@@ -278,10 +278,10 @@ class TicketManager(Manager):
     def get_iam_auth_tickets(self, queryset, username):
         service_ids = set(queryset.values_list("service_id", flat=True).distinct())
 
-        resources = [
-            {"resource_id": service_id, "resource_type": "service"}
-            for service_id in service_ids
-        ]
+        # resources = [
+        #     {"resource_id": service_id, "resource_type": "service"}
+        #     for service_id in service_ids
+        # ]
 
         apply_actions = ["ticket_view"]
  
@@ -297,8 +297,8 @@ class TicketManager(Manager):
         return queryset.filter(
             service_id__in=[
                 service_id
-                for service_id, perm in auth_actions.items()
-                if perm.get("ticket_view")
+                for service_id in service_ids
+                if auth_actions.get("ticket_view")
             ]
         )
 
